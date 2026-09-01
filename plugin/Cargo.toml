@@ -1,0 +1,21 @@
+[package]
+name = "randomushroom_plugin"
+version = "0.1.0-dev"
+edition = "2024"
+license = "GPL-3.0-or-later"
+
+[lib]
+name = "randomushroom"
+crate-type = ["cdylib"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[dependencies]
+dllmain-rs = "0.1.0"
+winsafe = { version = "0.0.28", features = ["user"] }

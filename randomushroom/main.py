@@ -48,6 +48,12 @@ class MainProgram:
             str(FILES_DIR / "randomushroom.asi"),
             str(self.game_directory),
         )
+        pdb_path = FILES_DIR / "randomushroom.pdb"
+        if pdb_path.exists():
+            shutil.copy(
+                str(pdb_path),
+                str(self.game_directory),
+            )
 
     def launch_game(self):
         subprocess.run(
