@@ -14,9 +14,6 @@ class GameManager:
     # returns True if the conditions for playing that task are met, returns False if not
     def check_if_task_available(self, task):
         conditions = self.gate_dict[task]
-        if conditions == []:
-            return True
-        
         for cond in conditions:
             if not self.tracker_dict[cond]: return False
         return True
