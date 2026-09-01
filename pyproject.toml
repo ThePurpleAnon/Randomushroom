@@ -1,0 +1,28 @@
+[project]
+name = "randomushroom"
+version = "0.1.0-dev"
+description = "Archipelago patcher for Mushroom Age"
+authors = [
+    {name = "ThePurpleAnon"}
+]
+license = {text = "GPL-3.0-or-later"}
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+dependencies = [
+    "pyside6 (>=6.11.2,<7.0.0)"
+]
+
+[project.urls]
+repository = "https://github.com/ThePurpleAnon/Randomushroom"
+
+[project.scripts]
+spritoglobin-dx = "randomushroom:main"
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+nuitka = "^2.6.7"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
