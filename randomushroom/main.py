@@ -45,10 +45,10 @@ class MainProgram:
 
     def apply_patch(self):
         shutil.copy(
-            str(FILES_DIR / "randomushroom.asi"),
+            str(FILES_DIR / "plugin" / "randomushroom.asi"),
             str(self.game_directory),
         )
-        pdb_path = FILES_DIR / "randomushroom.pdb"
+        pdb_path = FILES_DIR / "plugin" / "randomushroom.pdb"
         if pdb_path.exists():
             shutil.copy(
                 str(pdb_path),

@@ -1,6 +1,10 @@
 #!/usr/bin/env -S just --justfile
 
 
+[windows]
+set shell := ["powershell.exe", "-NoLogo", "-Command"]
+
+
 cargo-invocation := 'cargo +nightly -Z unstable-options -C plugin'
 
 
@@ -12,9 +16,9 @@ cargo *args:
     {{cargo-invocation}} {{args}}
 
 build *args:
-    {{cargo-invocation}} build --target i686-pc-windows-msvc --artifact-dir ../randomushroom/files {{args}}
-    rm -f randomushroom/files/randomushroom.asi
-    mv randomushroom/files/randomushroom.dll randomushroom/files/randomushroom.asi
+    {{cargo-invocation}} build --target i686-pc-windows-msvc --artifact-dir ../randomushroom/files/plugin {{args}}
+    -rm randomushroom/files/plugin/randomushroom.asi
+    mv randomushroom/files/plugin/randomushroom.dll randomushroom/files/plugin/randomushroom.asi
 
 run *args: build
     poetry run python -m randomushroom {{args}}
