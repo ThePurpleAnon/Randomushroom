@@ -265,7 +265,7 @@ class FileHelper:
                 if "/*" in line: block_comment = True
                 if "*/" in line: block_comment = False
 
-                if not line or line[:2] == "//" or block_comment: continue
+                if not line or line.startswith("//") or block_comment: continue
 
                 for pattern, function in commands.items():
                     match_expression = re.search(pattern, line)
