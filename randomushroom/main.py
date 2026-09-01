@@ -24,7 +24,7 @@ def main():
 
         sys.exit()
 
-    program = MainProgram(Path(path))
+    program = MainProgram(path)
 
     program.begin_client()
     program.apply_patch() # TODO: only do this if patch is not found
