@@ -7,7 +7,7 @@ import sys
 import threading
 from pathlib import Path
 
-from PySide6 import QtWidgets
+from PySide6 import QtWidgets, QtGui
 
 from randomushroom.classes import GameManager
 from randomushroom.constants import *
@@ -27,26 +27,57 @@ def main():
 
         sys.exit()
 
-    program = MainProgram(path)
+    app = QtWidgets.QApplication(sys.argv)
 
-    server_thread = threading.Thread(target = program.begin_tcp_server)
-    server_thread.daemon = True
-    server_thread.start()
+    if os.name == 'nt':
+        app.setStyle('Fusion')
 
-    client_thread = threading.Thread(target = program.begin_client)
-    client_thread.daemon = True
-    client_thread.start()
+    app_icon = QtGui.QIcon(str(FILES_DIR / APP_ICON))
+    app.setWindowIcon(app_icon)
 
-    program.apply_patch()
-    program.launch_game()
+    program = MainProgram(app, path)
+    program.show()
 
-class MainProgram:
+    sys.exit(app.exec())
+
+class MainProgram(QtWidgets.QMainWindow):
     server_host = "127.0.0.1"
     server_port = 55554
 
-    def __init__(self, game_directory):
+    def __init__(self, parent, game_directory):
+        super().__init__()
+
         self.game_directory = game_directory.parent
         self.game_executable = game_directory
+        self.game_running = False
+        self.server_running = False
+
+        main = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(main)
+        self.setCentralWidget(main)
+
+        go_button = QtWidgets.QPushButton(self.tr("Launch Game!"))
+        go_button.clicked.connect(self.start_randomized_game)
+        layout.addWidget(go_button, 0, 0)
+
+    def start_randomized_game(self):
+        if self.game_running:
+            return
+
+        if not self.server_running:
+            self.server_running = True
+            server_thread = threading.Thread(target = self.begin_tcp_server)
+            server_thread.daemon = True
+            server_thread.start()
+
+            client_thread = threading.Thread(target = self.begin_client)
+            client_thread.daemon = True
+            client_thread.start()
+
+        self.apply_patch()
+
+        game_thread = threading.Thread(target = self.launch_game)
+        game_thread.start()
     
     def begin_tcp_server(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -82,7 +113,8 @@ class MainProgram:
                 def send_size_prefixed_data_chunk(self, command, args): # TODO: debug later
                     json_payload = json.dumps({"command": command, "args": args})
                     payload = len(json_payload).to_bytes(4, 'big')
-                    payload += json_payload
+                    payload += json_payload.encode("utf-8")
+                    # TODO: actually send the payload
                 self.client.send_payload = send_size_prefixed_data_chunk
 
                 def receive_data_chunk(size):
@@ -99,7 +131,6 @@ class MainProgram:
                     print(f"rando client received payload {data}")
                     if data.get("command", "") in command_dict:
                         command_dict[data["command"]](self.client, *data.get("args", []))
-
 
             except ConnectionRefusedError:
                 print("rando client refused to connect")
@@ -119,10 +150,12 @@ class MainProgram:
             )
 
     def launch_game(self):
+        self.game_running = True
         subprocess.run(
             [str(self.game_executable)],
             cwd = str(self.game_directory),
         )
+        self.game_running = False
 
 class RandoClient:
     def __init__(self, game_directory, tcp_client_socket):
