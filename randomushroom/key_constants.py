@@ -34,3 +34,5 @@ KEY_PHONE_NUMBERS = {
 PROGRESSION_ITEMS = {
     "progressive_elixir": ["elixir", "total_elixir"],
 }
+
+LEVEL_STRING = "level_{0:02}_{1:02}"

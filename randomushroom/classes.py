@@ -176,7 +176,7 @@ class TrackerBuilder:
             self.has_silhouettes = False
 
             self.file_helper.process_script(
-                file = f"level_{task[0]:02}_{task[1]:02}.lvl",
+                file = LEVEL_STRING.format(*task) + ".lvl",
                 commands = {
                     r"gamemode=(\d+)": check_gamemode,
                     r"selectmode=(\d+)": check_selectmode,
@@ -192,10 +192,10 @@ class TrackerBuilder:
         output = {}
 
         for check in self.all_tasks:
-            output[f"level_{check[0]:02}_{check[1]:02}"] = False
+            output[LEVEL_STRING.format(*check)] = False
 
         for check in self.bonus_checks:
-            output[f"level_{check[0]:02}_{check[1]:02}_bonus"] = False
+            output[LEVEL_STRING.format(*check) + "_bonus"] = False
 
         items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS
         for item in items:
@@ -218,7 +218,7 @@ class TrackerBuilder:
                         if task in gatekeeper_dict["gates"]:
                             gates.append(gatekeeper)
 
-                    output[f"level_{task[0]:02}_{task[1]:02}"] = list(gates)
+                    output[LEVEL_STRING.format(*task)] = list(gates)
 
         return output
 
@@ -237,7 +237,7 @@ class TrackerBuilder:
             self.current_id = None
 
             self.file_helper.process_script(
-                file = f"level_{check[0]:02}_{check[1]:02}.lvl",
+                file = LEVEL_STRING.format(*check) + ".lvl",
                 commands = {
                     r"ar_ids(\d+)=(\d+)": set_item_id,
                 },
@@ -245,11 +245,11 @@ class TrackerBuilder:
             )
 
             if self.current_id is not None:
-                output[f"level_{check[0]:02}_{check[1]:02}_bonus_id"] = self.current_id
+                output[LEVEL_STRING.format(*check) + "_bonus_id"] = self.current_id
 
         for quest, quest_dict in KEY_QUESTS.items():
             check = quest_dict["task"]
-            output[f"level_{check[0]:02}_{check[1]:02}_quest"] = quest
+            output[LEVEL_STRING.format(*check) + "_quest"] = quest
 
         return output
 
