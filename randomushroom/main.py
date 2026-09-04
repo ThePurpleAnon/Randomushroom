@@ -1,7 +1,7 @@
 import json
 import os
-import socket
 import shutil
+import socket
 import subprocess
 import sys
 import threading
@@ -64,20 +64,25 @@ class MainProgram(QtWidgets.QMainWindow):
         if self.game_running:
             return
 
-        if not self.server_running:
-            self.server_running = True
-            server_thread = threading.Thread(target = self.begin_tcp_server)
-            server_thread.daemon = True
-            server_thread.start()
+        try_patch = self.apply_patch()
+        match try_patch:
+            case "not an exe":
+                print("not an exe file") # TODO: proper error handling
+            case "unknown architecture":
+                print("unknown architecture")
+            case _:
+                if not self.server_running:
+                    self.server_running = True
+                    server_thread = threading.Thread(target = self.begin_tcp_server)
+                    server_thread.daemon = True
+                    server_thread.start()
 
-            client_thread = threading.Thread(target = self.begin_client)
-            client_thread.daemon = True
-            client_thread.start()
+                    client_thread = threading.Thread(target = self.begin_client)
+                    client_thread.daemon = True
+                    client_thread.start()
 
-        self.apply_patch()
-
-        game_thread = threading.Thread(target = self.launch_game)
-        game_thread.start()
+                game_thread = threading.Thread(target = self.launch_game)
+                game_thread.start()
     
     def begin_tcp_server(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -112,8 +117,8 @@ class MainProgram(QtWidgets.QMainWindow):
 
                 def send_size_prefixed_data_chunk(self, command, args): # TODO: debug later
                     json_payload = json.dumps({"command": command, "args": args})
-                    payload = len(json_payload).to_bytes(4, 'big')
-                    payload += json_payload.encode("utf-8")
+                    payload = bytearray(len(json_payload).to_bytes(4, 'big'))
+                    payload.extend(json_payload.encode("utf-8"))
                     # TODO: actually send the payload
                 self.client.send_payload = send_size_prefixed_data_chunk
 
@@ -138,11 +143,32 @@ class MainProgram(QtWidgets.QMainWindow):
                 print("rando client timed out")
 
     def apply_patch(self):
+        with open(self.game_executable, "rb") as game_exe:
+            header = game_exe.read(2)
+            if header != b"MZ":
+                return "not an exe"
+            else:
+                game_exe.seek(60)
+                header_offset = int.from_bytes(game_exe.read(4), 'little')
+
+                game_exe.seek(header_offset + 4)
+                machine = int.from_bytes(game_exe.read(2), 'little')
+
+                match machine:
+                    case 0x014c: bits = "32" # i386
+                    case 0x8664: bits = "64" # AMD64
+                    # these last two will probably never see the light of day but fuck it why not
+                    case 0x0200: bits = "64" # IA64
+                    case 0xaa64: bits = "64" # ARM64
+                    case _: return "unknown architecture"
+
+        print(f"{bits}-bit EXE detected")
+
         shutil.copy(
-            str(FILES_DIR / "plugin" / "randomushroom.asi"),
+            str(FILES_DIR / "plugin" / f"randomushroom{bits}.asi"),
             str(self.game_directory),
         )
-        pdb_path = FILES_DIR / "plugin" / "randomushroom.pdb"
+        pdb_path = FILES_DIR / "plugin" / f"randomushroom{bits}.pdb"
         if pdb_path.exists():
             shutil.copy(
                 str(pdb_path),
