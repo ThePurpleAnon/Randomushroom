@@ -1,36 +1,28 @@
 #!/usr/bin/env -S just --justfile
 
 
+set default-list := true
 [windows]
 set shell := ["powershell.exe", "-NoLogo", "-Command"]
 
 
 cargo-invocation := 'cargo +nightly -Z unstable-options -C plugin'
+[windows]
+cargo-xwin-invocation := cargo-invocation
+[unix]
+cargo-xwin-invocation := cargo-invocation + ' xwin'
 
-
-default:
-    just --list
 
 [no-exit-message]
 cargo *args:
     {{cargo-invocation}} {{args}}
 
-build *args:
-    {{cargo-invocation}} build --target i686-pc-windows-msvc --artifact-dir ../randomushroom/files/plugin {{args}}
-    -rm randomushroom/files/plugin/randomushroom32.asi
-    mv randomushroom/files/plugin/randomushroom.dll randomushroom/files/plugin/randomushroom32.asi
-    -rm randomushroom/files/plugin/randomushroom32.pdb
-    mv randomushroom/files/plugin/randomushroom.pdb randomushroom/files/plugin/randomushroom32.pdb
-    -rm randomushroom/files/plugin/randomushroom32.dll.lib
-    mv randomushroom/files/plugin/randomushroom.dll.lib randomushroom/files/plugin/randomushroom32.dll.lib
+build-arch arch *args:
+    {{cargo-xwin-invocation}} build -Z unstable-options --target {{arch}}-pc-windows-msvc --artifact-dir ../randomushroom/files/plugin/{{arch}} {{args}}
+    -rm randomushroom/files/plugin/{{arch}}/randomushroom.asi
+    mv randomushroom/files/plugin/{{arch}}/randomushroom.dll randomushroom/files/plugin/{{arch}}/randomushroom.asi
 
-    {{cargo-invocation}} build --target x86_64-pc-windows-msvc --artifact-dir ../randomushroom/files/plugin {{args}}
-    -rm randomushroom/files/plugin/randomushroom64.asi
-    mv randomushroom/files/plugin/randomushroom.dll randomushroom/files/plugin/randomushroom64.asi
-    -rm randomushroom/files/plugin/randomushroom64.pdb
-    mv randomushroom/files/plugin/randomushroom.pdb randomushroom/files/plugin/randomushroom64.pdb
-    -rm randomushroom/files/plugin/randomushroom64.dll.lib
-    mv randomushroom/files/plugin/randomushroom.dll.lib randomushroom/files/plugin/randomushroom64.dll.lib
+build *args: (build-arch 'i686' args) (build-arch 'x86_64' args)
 
 run *args: build
     poetry run python -m randomushroom {{args}}

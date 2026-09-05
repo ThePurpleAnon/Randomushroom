@@ -82,6 +82,7 @@ class MainProgram(QtWidgets.QMainWindow):
                     client_thread.start()
 
                 game_thread = threading.Thread(target = self.launch_game)
+                game_thread.daemon = True
                 game_thread.start()
     
     def begin_tcp_server(self):
@@ -94,13 +95,10 @@ class MainProgram(QtWidgets.QMainWindow):
             while True:
                 c, addr = s.accept()
 
-                print(f"client {addr} connected!")
+                print(f"client connected at {addr}")
 
     def begin_client(self):
         # TODO: set up functions for tcp hooks and AP hooks and stuff
-        # client.on_begin_task("level_01_01")
-        # client.on_object_collected("level_01_01", 4)
-        # client.on_task_complete("level_01_01")
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
             try:
@@ -123,9 +121,9 @@ class MainProgram(QtWidgets.QMainWindow):
                 self.client.send_payload = send_size_prefixed_data_chunk
 
                 def receive_data_chunk(size):
-                    chunk = b""
+                    chunk = bytearray()
                     while len(chunk) < size:
-                        chunk += client_socket.recv(size - len(chunk))
+                        chunk.extend(client_socket.recv(size - len(chunk)))
                     return chunk
 
                 while True:
@@ -134,7 +132,7 @@ class MainProgram(QtWidgets.QMainWindow):
                     data = json.loads(payload)
 
                     print(f"rando client received payload {data}")
-                    if data.get("command", "") in command_dict:
+                    if data.get("command") in command_dict:
                         command_dict[data["command"]](self.client, *data.get("args", []))
 
             except ConnectionRefusedError:
@@ -155,20 +153,17 @@ class MainProgram(QtWidgets.QMainWindow):
                 machine = int.from_bytes(game_exe.read(2), 'little')
 
                 match machine:
-                    case 0x014c: bits = "32" # i386
-                    case 0x8664: bits = "64" # AMD64
-                    # these last two will probably never see the light of day but fuck it why not
-                    case 0x0200: bits = "64" # IA64
-                    case 0xaa64: bits = "64" # ARM64
-                    case _: return "unknown architecture"
+                    case 0x014c: arch = "i686"
+                    case 0x8664: arch = "x86_64"
+                    case _: return "invalid architecture"
 
-        print(f"{bits}-bit EXE detected")
+        print(f"{arch} EXE detected")
 
         shutil.copy(
-            str(FILES_DIR / "plugin" / f"randomushroom{bits}.asi"),
+            str(FILES_DIR / "plugin" / arch / "randomushroom.asi"),
             str(self.game_directory),
         )
-        pdb_path = FILES_DIR / "plugin" / f"randomushroom{bits}.pdb"
+        pdb_path = FILES_DIR / "plugin" / arch / "randomushroom.pdb"
         if pdb_path.exists():
             shutil.copy(
                 str(pdb_path),
