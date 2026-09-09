@@ -270,10 +270,12 @@ class FilePatcher:
         self.capture_name = False
         self.name_to_capture = None
         self.captured_name = None
+        self.tcrd_line = None
 
         def look_for_obj_id(line_number = None):
             self.looking_for_obj = True
             if self.capture_name and (self.name_to_capture is not None):
+                self.name_to_capture["tcrd_line"] = self.tcrd_line
                 self.captured_name = self.name_to_capture
 
             self.capture_name = False
@@ -286,10 +288,14 @@ class FilePatcher:
                     "file_ext": name_extension,
                     "line_num": line_number
                 }
-        
+
         def get_id(found_obj_id, line_number = None):
             if self.looking_for_obj and found_obj_id == obj_id:
                 self.capture_name = True
+
+        def get_tcrd_line(line_number = None):
+            if self.looking_for_obj:
+                self.tcrd_line = line_number
 
         self.file_helper.process_script(
             file = lvl_name + ".lvl",
@@ -297,6 +303,7 @@ class FilePatcher:
                 re.escape("<obj/>"): look_for_obj_id,
                 r"id=(\d+)": get_id,
                 r"name=(\S+)\.(\S+)": get_name,
+                r"tcrd=\S+": get_tcrd_line
             },
             encoding = 'utf-8',
             get_line_number = True,
@@ -305,9 +312,8 @@ class FilePatcher:
 
         if self.captured_name is None: return
 
-        # TODO: add alpha jpg support
         if new_img is None:
-            new_img = FILES_DIR / "test_img.png"
+            new_img = FILES_DIR / "img_ap.png"
 
         obj_dir = self.directory / "objects"
 
@@ -320,6 +326,9 @@ class FilePatcher:
             replacements = [{
                 "line_num": self.captured_name["line_num"],
                 "contents": f"name={new_img.stem}.{self.captured_name["file_ext"]}",
+            }, {
+                "line_num": self.captured_name["tcrd_line"],
+                "contents": "tcrd={0.000,0.000,1.000,1.000}",
             }],
             encoding = 'utf-8',
             new_root_dir = self.update_directory,
