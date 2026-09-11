@@ -1,0 +1,4 @@
+GameTop.com is a website that hosts free games from a multitude of developers, including NevoSoft's Mushroom Age. This is a fantastic free way to enjoy the original 2008 English version of the game, though it justifiably raises some concerns of its validity. In this folder is an official statement in an email from a NevoSoft employee verifying that the GameTop version is legit, as well as resources to prove the validity of the email itself via its signature (plus an archive of the email's timestamp since their signature rotates).
+
+Here's a duplicate of the URL to the dkim archive, in case there are any issues with the URL file included in the repo:
+https://archive.zk.email/search?q=nevosoft-ru.20251104.gappssmtp.com
