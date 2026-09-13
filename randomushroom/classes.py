@@ -261,100 +261,28 @@ class FilePatcher:
         self.file_helper = FileHelper()
 
     def set_root(self, directory):
-        self.file_helper.set_root(directory / "data")
-        self.directory = (directory / "data")
-        self.update_directory = (directory / "update" / "data")
+        self.randomushroom_directory = (directory / "randomushroom")
+        self.img_directory = (self.randomushroom_directory / "objects")
 
-    def replace_level_object_image(self, lvl_name, obj_id, new_img = None): # TODO: also do names of objects
-        self.looking_for_obj = False
-        self.capture_name = False
-        self.name_to_capture = None
-        self.captured_name = None
-        self.tcrd_line = None
+    def move_images(self, images_to_move, convert_to_alpha_jpeg):
+        for image_path in images_to_move:
+            img = Image.open(str(image_path))
 
-        def look_for_obj_id(line_number = None):
-            self.looking_for_obj = True
-            if self.capture_name and (self.name_to_capture is not None):
-                self.name_to_capture["tcrd_line"] = self.tcrd_line
-                self.captured_name = self.name_to_capture
+            alpha = img.getchannel("A").tobytes()
+            image_dest = self.img_directory / image_path.name
 
-            self.capture_name = False
-            self.name_to_capture = None
-        
-        def get_name(obj_name, name_extension, line_number = None):
-            if self.looking_for_obj:
-                self.name_to_capture = {
-                    "filename": obj_name,
-                    "file_ext": name_extension,
-                    "line_num": line_number
-                }
+            if convert_to_alpha_jpeg:
+                image_dest = image_dest.with_name(f"_a_{image_dest.stem}.jpg")
+                img = img.convert("RGB")
+            else:
+                image_dest = image_dest.with_name(f"{image_dest.stem}.png")
 
-        def get_id(found_obj_id, line_number = None):
-            if self.looking_for_obj and found_obj_id == obj_id:
-                self.capture_name = True
+            image_dest.parent.mkdir(parents=True, exist_ok=True)
+            img.save(str(image_dest))
 
-        def get_tcrd_line(line_number = None):
-            if self.looking_for_obj:
-                self.tcrd_line = line_number
-
-        self.file_helper.process_script(
-            file = lvl_name + ".lvl",
-            commands = {
-                re.escape("<obj/>"): look_for_obj_id,
-                r"id=(\d+)": get_id,
-                r"name=(\S+)\.(\S+)": get_name,
-                r"tcrd=\S+": get_tcrd_line
-            },
-            encoding = 'utf-8',
-            get_line_number = True,
-        )
-        look_for_obj_id()
-
-        if self.captured_name is None: return
-
-        if new_img is None:
-            new_img = FILES_DIR / "img_ap.png"
-
-        obj_dir = self.directory / "objects"
-
-        alpha_jpg = False
-        if self.captured_name["file_ext"] == "tga" and any(obj_dir.rglob(f"_a_{self.captured_name["filename"]}.jpg")):
-            alpha_jpg = True
-
-        self.file_helper.replace_script_lines(
-            file = lvl_name + ".lvl",
-            replacements = [{
-                "line_num": self.captured_name["line_num"],
-                "contents": f"name={new_img.stem}.{self.captured_name["file_ext"]}",
-            }, {
-                "line_num": self.captured_name["tcrd_line"],
-                "contents": "tcrd={0.000,0.000,1.000,1.000}",
-            }],
-            encoding = 'utf-8',
-            new_root_dir = self.update_directory,
-        )
-
-        img = Image.open(new_img)
-
-        old_file_ext = next(itertools.chain(
-            obj_dir.rglob(f"{self.captured_name["filename"]}.*"),
-            obj_dir.rglob(f"_a_{self.captured_name["filename"]}.*"),
-        )).suffix
-        img_file = obj_dir / "!!!!!!modded" / f"{new_img.stem}{old_file_ext}"
-        img_file.parent.mkdir(parents=True, exist_ok=True)
-        alpha = img.getchannel("A").tobytes()
-
-        if alpha_jpg:
-            img_file = img_file.with_name(f"_a_{img_file.name}")
-
-        if old_file_ext == ".jpg":
-            img = img.convert("RGB")
-
-        img.save(str(img_file))
-
-        if alpha_jpg:
-            with open(img_file, "ab") as jpg:
-                jpg.write(alpha)
+            if convert_to_alpha_jpeg:
+                with open(image_dest, "ab") as jpg:
+                    jpg.write(alpha)
 
 
 class FileHelper:

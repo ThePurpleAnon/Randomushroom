@@ -108,8 +108,7 @@ class MainProgram(QtWidgets.QMainWindow):
             if file_path.exists(): file_path.unlink()
 
         folders_to_remove = [
-            self.game_directory / "update",
-            self.game_directory / "data" / "objects" / "!!!!!!modded",
+            self.game_directory / "randomushroom",
         ]
 
         for dir_path in folders_to_remove:
@@ -202,12 +201,12 @@ class MainProgram(QtWidgets.QMainWindow):
                 str(self.game_directory),
             )
 
-        for level_str, obj_id in list(filter(lambda x: x[0].endswith("bonus_id"), self.game_manager.bonus_dict.items())):
-            self.file_patcher.replace_level_object_image(
-                lvl_name = level_str.removesuffix("_bonus_id"),
-                obj_id   = obj_id,
-                new_img  = None, # TODO: get this info out of AP
-            )
+        self.file_patcher.move_images(
+            images_to_move = [
+                FILES_DIR / "img_ap.png",
+            ],
+            convert_to_alpha_jpeg = (arch == "i686"),
+        )
 
     def launch_game(self):
         self.game_running = True
