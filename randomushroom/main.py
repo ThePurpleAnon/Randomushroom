@@ -14,8 +14,8 @@ from randomushroom.classes import GameManager, FilePatcher
 from randomushroom.constants import *
 
 def main():
-    # path = Path(path/to/your/game)
     path = None # TODO: let the user control this
+    # path = Path(path/to/your/game)
 
     if path is None:
         app = QtWidgets.QApplication(sys.argv)
