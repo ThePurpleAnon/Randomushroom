@@ -1,4 +1,5 @@
 import itertools
+import random
 import re
 import shutil
 
@@ -246,7 +247,8 @@ class TrackerBuilder:
                 encoding = 'utf-8',
             )
 
-            obj_id = list(self.current_id_set).pop() # TODO: make this random somehow
+            obj_id = random.choice(list(self.current_id_set))
+            print(obj_id)
             output[LEVEL_STRING.format(*check) + "_bonus_id"] = obj_id
 
         for quest, quest_dict in KEY_QUESTS.items():

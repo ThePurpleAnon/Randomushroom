@@ -14,3 +14,6 @@ QtWidgets.QApplication.setApplicationDisplayName(APP_DISPLAY_NAME)
 SCRIPT_DIR = Path(__file__).parent
 FILES_DIR = SCRIPT_DIR / 'files'
 LANG_DIR = SCRIPT_DIR / 'lang'
+
+
+RANDOM_SEED = 0

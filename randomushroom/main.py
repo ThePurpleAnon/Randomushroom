@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import shutil
 import socket
 import subprocess
@@ -67,19 +68,25 @@ class MainProgram(QtWidgets.QMainWindow):
         go_button.clicked.connect(self.clean_directory)
         layout.addWidget(go_button, 1, 0)
 
+    def _throw_error(self, title, blurb):
+        QtWidgets.QMessageBox.warning(self, title, blurb)
+
     def start_randomized_game(self):
         if self.game_running:
             return
 
         self.file_patcher.set_root(self.game_directory)
+
+        random.seed(RANDOM_SEED)
         self.game_manager.build_tracker(self.game_directory)
 
         try_patch = self.apply_patch()
+        error_title = self.tr("Error Running Game!")
         match try_patch:
             case "not an exe":
-                print("not an exe file") # TODO: proper error handling
+                self._throw_error(error_title, self.tr("The chosen game file is not an EXE! Please make sure your Mushroom Age executable file is the target game file before launching."))
             case "invalid architecture":
-                print("invalid architecture")
+                self._throw_error(error_title, self.tr("The chosen game file has an invalid architecture! Please make sure you have chosen a valid Mushroom Age executable file before launching."))
             case _:
                 if not self.server_running:
                     self.server_running = True
@@ -185,6 +192,14 @@ class MainProgram(QtWidgets.QMainWindow):
                     case 0x014c: arch = "i686"
                     case 0x8664: arch = "x86_64"
                     case _: return "invalid architecture"
+
+                game_exe.seek(header_offset + 22)
+                characteristics = int.from_bytes(game_exe.read(2), 'little')
+
+                if characteristics & 0x2000: # dll flag
+                    return "not an exe"
+
+                # TODO: should probably also make the dll do a handshake with the program so it can verify it didn't just run an unrelated or unmodded game file
 
         print(f"{arch} EXE detected")
 
