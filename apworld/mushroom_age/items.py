@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Item, ItemClassification
 
+from .game_info.key_constants import *
+
 if TYPE_CHECKING:
     from .world import MushroomAgeWorld
 
@@ -20,6 +22,8 @@ def item_names_to_ids() -> dict[str, int]:
     
     for i, item in enumerate(FILLER_ITEMS):
         items[item] = 40 + i
+
+    return items
 
 
 def get_random_filler_item_name(world: MushroomAgeWorld) -> str:

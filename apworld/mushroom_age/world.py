@@ -15,7 +15,7 @@ class MushroomAgeWorld(World):
 
     web = web_world.MushroomAgeWebWorld()
 
-    options_dataclass = mushroom_age_options.MushroomAgeQuestOptions
+    options_dataclass = mushroom_age_options.MushroomAgeOptions
     options: mushroom_age_options.MushroomAgeOptions
 
     location_name_to_id = locations.location_names_to_ids()

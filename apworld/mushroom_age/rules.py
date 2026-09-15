@@ -46,11 +46,11 @@ def set_all_location_rules(world: MushroomAgeWorld) -> None:
                 
                 rule = reduce(operator.or_, rules_list)
 
-                location = world.get_location(LOCATION_NAME_STRING.format(task))
+                location = world.get_location(LOCATION_NAME_STRING.format(*task))
                 world.set_rule(location, rule)
 
                 if task in BONUS_ITEM_TASKS:
-                    location = world.get_location(LOCATION_NAME_STRING_BONUS.format(task))
+                    location = world.get_location(LOCATION_NAME_STRING_BONUS.format(*task))
                     world.set_rule(location, rule)
 
 def set_completion_condition(world: MushroomAgeWorld) -> None:
