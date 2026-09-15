@@ -1,0 +1,1 @@
+from .world import MushroomAgeWorld as MushroomAgeWorld

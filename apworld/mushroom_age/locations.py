@@ -1,0 +1,55 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from BaseClasses import ItemClassification, Location
+
+from . import items
+from .game_info.key_constants import *
+from .game_info.task_ids import *
+
+if TYPE_CHECKING:
+    from .world import MushroomAgeWorld
+
+
+class MushroomAgeLocation(Location):
+    game = "Mushroom Age"
+
+
+def get_location_names_with_ids(location_dicts: list[dict]) -> dict[str, int | None]:
+    return_dict = {}
+
+    for location in location_dicts:
+        location_id = (location["task_id"][0]) * 10000 + (location["task_id"][1] * 100)
+        for quest in KEY_QUESTS.values():
+            if location["task_id"] == quest["task"]:
+                location_id = None
+
+        if location["bonus"]:
+            return_dict[LOCATION_NAME_STRING_BONUS.format(location["task_id"])] = location_id + 1
+        else:
+            return_dict[LOCATION_NAME_STRING.format(location["task_id"])] = location_id
+
+
+def create_all_locations(world: MushroomAgeWorld) -> None:
+    create_regular_locations(world)
+    create_events(world)
+
+def create_regular_locations(world: MushroomAgeWorld) -> None:
+    for time_period in TIME_PERIODS.values():
+        region = world.get_region(time_period["name"])
+
+        locations = get_location_names_with_ids(
+            [{"task_id": task_id, "bonus": False} for task_id in (
+                t for t in TASK_IDS if t[0] in set(time_period["chapters"])
+            )]
+        )
+
+        region.add_locations(locations, MushroomAgeLocation)
+
+def create_events(world: MushroomAgeWorld) -> None:
+    for quest in KEY_QUESTS.values():
+        quest_item = items.APQuestItem(quest["name"], ItemClassification.progression, None, world.player)
+        location = world.get_location(LOCATION_NAME_STRING.format(quest["task_id"]), world.player)
+
+        location.place_locked_item(quest_item)

@@ -6,7 +6,7 @@ import shutil
 from PIL import Image
 
 from randomushroom.constants import *
-from randomushroom.key_constants import *
+from randomushroom.key_constants import * # TODO: grab this from the apworld itself
 
 
 class GameManager:
@@ -248,7 +248,6 @@ class TrackerBuilder:
             )
 
             obj_id = random.choice(list(self.current_id_set))
-            print(obj_id)
             output[LEVEL_STRING.format(*check) + "_bonus_id"] = obj_id
 
         for quest, quest_dict in KEY_QUESTS.items():
