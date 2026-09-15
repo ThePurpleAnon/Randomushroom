@@ -45,6 +45,12 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
             )]
         )
 
+        locations |= get_location_names_with_ids(
+            [{"task_id": task_id, "bonus": True} for task_id in (
+                t for t in BONUS_ITEM_TASKS if t[0] in set(time_period["chapters"])
+            )]
+        )
+
         region.add_locations(locations, MushroomAgeLocation)
 
 def create_events(world: MushroomAgeWorld) -> None:
