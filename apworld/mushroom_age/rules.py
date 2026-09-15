@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import reduce
 from typing import TYPE_CHECKING
 
 from rule_builder.options import OptionFilter
@@ -45,17 +46,24 @@ def set_all_location_rules(world: MushroomAgeWorld) -> None:
                         else:
                             gates.append(gatekeeper["name"])
 
-                match len(gates):
-                    case 0: continue
-                    case 1: rule = Has(gates[0])
-                    case _: rule = HasAll(*gates)
+                if len(gates) == 0:
+                    continue
 
-                    location = world.get_location(LOCATION_NAME_STRING.format(task))
+                rules_list = []
+                for rule in gates:
+                    if isinstance(rule, list):
+                        rules_list.append(Has(rule[0], count = rule[1]))
+                    else:
+                        rules_list.append(Has(rule))
+                
+                rule = reduce(operator.or_, rules_list)
+
+                location = world.get_location(LOCATION_NAME_STRING.format(task))
+                world.set_rule(location, rule)
+
+                if task in BONUS_ITEM_TASKS:
+                    location = world.get_location(LOCATION_NAME_STRING_BONUS.format(task))
                     world.set_rule(location, rule)
-
-                    if task in BONUS_ITEM_TASKS:
-                        location = world.get_location(LOCATION_NAME_STRING_BONUS.format(task))
-                        world.set_rule(location, rule)
 
 def set_completion_condition(world: MushroomAgeWorld) -> None:
     world.set_completion_rule(Has(KEY_QUESTS["victory"]["name"]))
