@@ -11,6 +11,16 @@ if TYPE_CHECKING:
 class MushroomAgeItem(Item):
     game = "Mushroom Age"
 
+def item_names_to_ids() -> dict[str, int]:
+    items = {}
+
+    items_to_check = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS | TRAP_ITEMS
+    for item in items_to_check.values():
+        items[item["name"]] = item["id"]
+    
+    for i, item in enumerate(FILLER_ITEMS):
+        items[item] = 40 + i
+
 
 def get_random_filler_item_name(world: MushroomAgeWorld) -> str:
     if world.random.randint(0, 99) < world.options.trap_chance:

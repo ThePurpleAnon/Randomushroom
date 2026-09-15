@@ -15,6 +15,12 @@ if TYPE_CHECKING:
 class MushroomAgeLocation(Location):
     game = "Mushroom Age"
 
+def location_names_to_ids() -> dict[str, int | None]:
+    locations = get_location_names_with_ids([{"task_id": task_id, "bonus": False} for task_id in TASK_IDS])
+    locations |= get_location_names_with_ids([{"task_id": task_id, "bonus": True} for task_id in BONUS_ITEM_TASKS])
+
+    return locations
+
 
 def get_location_names_with_ids(location_dicts: list[dict]) -> dict[str, int | None]:
     return_dict = {}
