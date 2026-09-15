@@ -13,31 +13,19 @@ if TYPE_CHECKING:
 
 
 def set_all_rules(world: MushroomAgeWorld) -> None:
-    set_all_entrance_rules(world)
     set_all_location_rules(world)
     set_completion_condition(world)
 
-def set_all_entrance_rules(world: MushroomAgeWorld) -> None:
-    phone_gates = ["nostradamus", "socrates", "mushroom_age"]
-    for location in phone_gates:
-        phone_gate = f"Title Screen to {TIME_PERIODS[location]["name"]}"
-        phone_item = KEY_PHONE_NUMBERS[f"{location}_number"]["name"]
-        world.set_rule(phone_gate, Has(phone_item))
-
-    wedding_gate_0 = KEY_QUESTS["professor_hope"]["name"]
-    wedding_gate_1 = KEY_QUESTS["tom_return"]["name"]
-    wedding_gate_2 = KEY_QUESTS["uber_mushroom"]["name"]
-
-    world.set_rule(f"Title Screen to {TIME_PERIODS["wedding"]["name"]}", HasAll(wedding_gate_0, wedding_gate_1, wedding_gate_2))
-
 def set_all_location_rules(world: MushroomAgeWorld) -> None:
+    gatekeepers = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS
+
     for period in TIME_PERIODS.values():
         gates = []
         for chapter in period_dict["chapters"]:
             for task in TASK_IDS:
                 if chapter != task[0]: continue
 
-                for gatekeeper_key, gatekeeper in KEY_ITEMS.items():
+                for gatekeeper_key, gatekeeper in gatekeepers.items():
                     if task in gatekeeper_dict["gates"]:
                         pool_name = gatekeeper.get("pool_name")
                         if pool_name is not None:
