@@ -43,6 +43,7 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
         if name == item["name"]:
             if item.get("useful", False):
                 classification = ItemClassification.useful
+            else:
                 classification = ItemClassification.progression
             item_id = item["id"]
     
