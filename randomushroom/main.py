@@ -40,7 +40,7 @@ def main():
     app_icon = QtGui.QIcon(str(FILES_DIR / APP_ICON))
     app.setWindowIcon(app_icon)
 
-    program = MainProgram(app, path)
+    program = MainProgram(app, Path(path))
     program.show()
 
     sys.exit(app.exec())
