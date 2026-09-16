@@ -19,7 +19,7 @@ def main():
         if f"--{arg}" in sys.argv:
             args[arg] = sys.argv[sys.argv.index(f"--{arg}") + 1]
 
-    path = args.get("game_exe")
+    path = Path(args.get("game_exe"))
 
     if path is None:
         app = QtWidgets.QApplication(sys.argv)
@@ -40,7 +40,7 @@ def main():
     app_icon = QtGui.QIcon(str(FILES_DIR / APP_ICON))
     app.setWindowIcon(app_icon)
 
-    program = MainProgram(app, Path(path))
+    program = MainProgram(app, path)
     program.show()
 
     sys.exit(app.exec())
