@@ -17,7 +17,7 @@ dependencies = [
 repository = "https://github.com/ThePurpleAnon/Randomushroom"
 
 [project.scripts]
-spritoglobin-dx = "randomushroom:main"
+randomushroom = "randomushroom:main"
 
 [tool.poetry]
 
