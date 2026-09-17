@@ -33,13 +33,4 @@ class MushroomAgeSettings(settings.Group):
         description = "Path to your game's executable file"
         is_exe = True
 
-    class RandomushroomExecutable(settings.FilePath):
-        """
-        Path to your Randomushroom client executable.
-        """
-
-        description = "Path to randomushroom.exe"
-        is_exe = True
-
     game_exe: GameExecutable = GameExecutable("")
-    rand_exe: RandomushroomExecutable = RandomushroomExecutable("")

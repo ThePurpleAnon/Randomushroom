@@ -18,11 +18,8 @@ cargo *args:
     {{cargo-invocation}} {{args}}
 
 build-arch arch *args:
-    {{cargo-xwin-invocation}} build -Z unstable-options --target {{arch}}-pc-windows-msvc --artifact-dir ../randomushroom/files/plugin/{{arch}} {{args}}
-    -rm randomushroom/files/plugin/{{arch}}/randomushroom.asi
-    mv randomushroom/files/plugin/{{arch}}/randomushroom.dll randomushroom/files/plugin/{{arch}}/randomushroom.asi
+    {{cargo-xwin-invocation}} build -Z unstable-options --target {{arch}}-pc-windows-msvc --artifact-dir ../apworld/mushroom_age/randomushroom/files/plugin/{{arch}} {{args}}
+    -rm apworld/mushroom_age/randomushroom/files/plugin/{{arch}}/randomushroom.asi
+    mv apworld/mushroom_age/randomushroom/files/plugin/{{arch}}/randomushroom.dll apworld/mushroom_age/randomushroom/files/plugin/{{arch}}/randomushroom.asi
 
 build *args: (build-arch 'i686' args) (build-arch 'x86_64' args)
-
-run *args: build
-    poetry run python -m randomushroom {{args}}

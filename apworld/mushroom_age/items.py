@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Item, ItemClassification
 
-from .game_info.key_constants import *
+from .randomushroom.key_constants import *
 
 if TYPE_CHECKING:
     from .world import MushroomAgeWorld

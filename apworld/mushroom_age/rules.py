@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from rule_builder.options import OptionFilter
 from rule_builder.rules import Has, HasAll, Rule
 
-from .game_info.key_constants import *
+from .randomushroom.key_constants import *
 
 if TYPE_CHECKING:
     from .world import MushroomAgeWorld

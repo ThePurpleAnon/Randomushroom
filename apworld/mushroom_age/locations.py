@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from BaseClasses import ItemClassification, Location
 
 from . import items
-from .game_info.key_constants import *
-from .game_info.task_ids import *
+from .randomushroom.key_constants import *
+from .randomushroom.task_ids import *
 
 if TYPE_CHECKING:
     from .world import MushroomAgeWorld

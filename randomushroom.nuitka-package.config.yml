@@ -1,5 +1,0 @@
-- module-name: "randomushroom"
-  data-files:
-    - dirs:
-      - "files"
-      - "lang"

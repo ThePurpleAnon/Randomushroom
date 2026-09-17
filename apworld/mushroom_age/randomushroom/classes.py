@@ -1,12 +1,8 @@
 import itertools
-import random
 import re
 import shutil
 
-from PIL import Image
-
-from randomushroom.constants import *
-from randomushroom.key_constants import * # TODO: grab this from the apworld itself
+from .key_constants import *
 
 
 class GameManager:
@@ -247,7 +243,7 @@ class TrackerBuilder:
                 encoding = 'utf-8',
             )
 
-            obj_id = random.choice(list(self.current_id_set))
+            obj_id = list(self.current_id_set).pop() # TODO: make random
             output[LEVEL_STRING.format(*check) + "_bonus_id"] = obj_id
 
         for quest, quest_dict in KEY_QUESTS.items():
@@ -265,48 +261,17 @@ class FilePatcher:
         self.randomushroom_directory = (directory / "randomushroom")
         self.img_directory = (self.randomushroom_directory / "objects")
 
-    def move_images(self, images_to_move, convert_to_alpha_jpeg):
+    def move_images(self, images_to_move):
+        self.img_directory.mkdir(parents=True, exist_ok=True)
         for image_path in images_to_move:
-            img = Image.open(str(image_path))
-
-            alpha = img.getchannel("A").tobytes()
-            image_dest = self.img_directory / image_path.name
-
-            if convert_to_alpha_jpeg:
-                image_dest = image_dest.with_name(f"_a_{image_dest.stem}.jpg")
-                img = img.convert("RGB")
-            else:
-                image_dest = image_dest.with_name(f"{image_dest.stem}.png")
-
-            image_dest.parent.mkdir(parents=True, exist_ok=True)
-            img.save(str(image_dest))
-
-            if convert_to_alpha_jpeg:
-                with open(image_dest, "ab") as jpg:
-                    jpg.write(alpha)
-
+            shutil.copy(
+                str(image_path),
+                str(self.img_directory),
+            )
 
 class FileHelper:
     def set_root(self, directory):
         self.directory = directory
-
-    def replace_script_lines(self, file, replacements, encoding = 'utf-16', new_root_dir = None):
-        if new_root_dir is None: new_root_dir = self.directory
-
-        directory_to_check = self.directory
-
-        file_to_open = next(directory_to_check.rglob(file))
-        with open(file_to_open, "r", encoding = encoding, errors = 'replace') as script:
-            lines = script.readlines()
-
-        for info_dict in replacements:
-            lines[info_dict["line_num"] - 1] = f"{info_dict["contents"]}\n"
-
-        replacement_file = file_to_open.relative_to(directory_to_check)
-        (new_root_dir / replacement_file).parent.mkdir(parents=True, exist_ok=True)
-
-        with open(new_root_dir / replacement_file, "w", encoding = encoding) as new_script:
-            new_script.writelines(lines)
 
     def process_script(self, file, commands, encoding = 'utf-16', get_line_number = False):
         with open(next(self.directory.rglob(file)), "r", encoding = encoding, errors = 'replace') as script:

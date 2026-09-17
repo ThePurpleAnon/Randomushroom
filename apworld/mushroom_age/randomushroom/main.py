@@ -1,6 +1,5 @@
 import json
 import os
-import random
 import shutil
 import socket
 import subprocess
@@ -8,48 +7,17 @@ import sys
 import threading
 from pathlib import Path
 
-from PySide6 import QtWidgets, QtGui
+from .classes import GameManager, FilePatcher
 
-from randomushroom.classes import GameManager, FilePatcher
-from randomushroom.constants import *
+def main(path, ap_url):
+    program = MainProgram(path)
+    program.start_randomized_game()
 
-def main():
-    args = {}
-    for arg in ["game_exe", "ap_url"]:
-        if f"--{arg}" in sys.argv:
-            args[arg] = sys.argv[sys.argv.index(f"--{arg}") + 1]
-
-    path = Path(args.get("game_exe"))
-
-    if path is None:
-        app = QtWidgets.QApplication(sys.argv)
-
-        QtWidgets.QMessageBox.information(
-            None,
-            "Find your Mushroom Age Executable",
-            "yo this is your reminder to uncomment the 'path' variable in main.py's main() function. ik it kinda sucks but until literally 5 minutes ago i just had my own game path sitting at the top of the file. just make sure not to include that line in your commits lmao. i'll make a proper GUI later i promise. anyway the program is closing now byeeee.",
-        )
-
-        sys.exit()
-
-    app = QtWidgets.QApplication(sys.argv)
-
-    if os.name == 'nt':
-        app.setStyle('Fusion')
-
-    app_icon = QtGui.QIcon(str(FILES_DIR / APP_ICON))
-    app.setWindowIcon(app_icon)
-
-    program = MainProgram(app, path)
-    program.show()
-
-    sys.exit(app.exec())
-
-class MainProgram(QtWidgets.QMainWindow):
+class MainProgram:
     server_host = "127.0.0.1"
     server_port = 55554
 
-    def __init__(self, parent, game_directory):
+    def __init__(self, game_directory):
         super().__init__()
 
         self.game_directory = game_directory.parent
@@ -57,23 +25,12 @@ class MainProgram(QtWidgets.QMainWindow):
         self.game_running = False
         self.server_running = False
 
+        self.files_dir = Path(__file__).parent / 'files'
         self.file_patcher = FilePatcher()
         self.game_manager = GameManager()
 
-        main = QtWidgets.QWidget()
-        layout = QtWidgets.QGridLayout(main)
-        self.setCentralWidget(main)
-
-        go_button = QtWidgets.QPushButton(self.tr("Launch Game!"))
-        go_button.clicked.connect(self.start_randomized_game)
-        layout.addWidget(go_button, 0, 0)
-
-        go_button = QtWidgets.QPushButton(self.tr("Clean Directory"))
-        go_button.clicked.connect(self.clean_directory)
-        layout.addWidget(go_button, 1, 0)
-
     def _throw_error(self, title, blurb):
-        QtWidgets.QMessageBox.warning(self, title, blurb)
+        print(f"{title}\n{blurb}")
 
     def start_randomized_game(self):
         if self.game_running:
@@ -81,16 +38,15 @@ class MainProgram(QtWidgets.QMainWindow):
 
         self.file_patcher.set_root(self.game_directory)
 
-        random.seed(RANDOM_SEED)
         self.game_manager.build_tracker(self.game_directory)
 
         try_patch = self.apply_patch()
-        error_title = self.tr("Error Running Game!")
+        error_title = "Error Running Game!"
         match try_patch:
             case "not an exe":
-                self._throw_error(error_title, self.tr("The chosen game file is not an EXE! Please make sure your Mushroom Age executable file is the target game file before launching."))
+                self._throw_error(error_title, "The chosen game file is not an EXE! Please make sure your Mushroom Age executable file is the target game file before launching.")
             case "invalid architecture":
-                self._throw_error(error_title, self.tr("The chosen game file has an invalid architecture! Please make sure you have chosen a valid Mushroom Age executable file before launching."))
+                self._throw_error(error_title, "The chosen game file has an invalid architecture! Please make sure you have chosen a valid Mushroom Age executable file before launching.")
             case _:
                 if not self.server_running:
                     self.server_running = True
@@ -210,10 +166,10 @@ class MainProgram(QtWidgets.QMainWindow):
         self.clean_directory()
 
         shutil.copy(
-            str(FILES_DIR / "plugin" / arch / "randomushroom.asi"),
+            str(self.files_dir / "plugin" / arch / "randomushroom.asi"),
             str(self.game_directory),
         )
-        pdb_path = FILES_DIR / "plugin" / arch / "randomushroom.pdb"
+        pdb_path = self.files_dir / "plugin" / arch / "randomushroom.pdb"
         if pdb_path.exists():
             shutil.copy(
                 str(pdb_path),
@@ -222,9 +178,8 @@ class MainProgram(QtWidgets.QMainWindow):
 
         self.file_patcher.move_images(
             images_to_move = [
-                FILES_DIR / "img_ap.png",
+                self.files_dir / "img_ap.tga",
             ],
-            convert_to_alpha_jpeg = (arch == "i686"),
         )
 
     def launch_game(self):
