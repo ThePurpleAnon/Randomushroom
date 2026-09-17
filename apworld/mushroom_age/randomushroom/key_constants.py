@@ -42,4 +42,4 @@ TRAP_ITEMS = {
 
 FILLER_ITEMS = ["Hourglass", "Mushroom Spores", "Photo of Professor Einbock's Wife"]
 
-LEVEL_STRING = "level_{0:02}_{1:02}"
+LEVEL_STRING = "level_{0:02}_{1:02}.lvl"

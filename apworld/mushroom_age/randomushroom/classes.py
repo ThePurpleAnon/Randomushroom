@@ -3,6 +3,7 @@ import re
 import shutil
 
 from .key_constants import *
+from .task_ids import *
 
 
 class GameManager:
@@ -10,8 +11,8 @@ class GameManager:
         tracker_builder = TrackerBuilder(game_directory)
 
         self.tracker_dict = tracker_builder.build_tracking_dict() # for checking which tasks are complete and which key items are attained
-        self.gate_dict =    tracker_builder.build_gate_dict()     # for checking if a task is allowed to be played at the moment
-        self.bonus_dict =   tracker_builder.build_bonus_dict()    # for checking which object IDs give checks, and which tasks give quests
+        self.gate_dict    = tracker_builder.build_gate_dict()     # for checking if a task is allowed to be played at the moment
+        self.bonus_dict   = tracker_builder.build_bonus_dict()    # for checking which object IDs give checks
 
     # returns True if the conditions for playing that task are met, returns False if not
     def check_if_task_available(self, task):
@@ -34,9 +35,7 @@ class GameManager:
         return True
 
     # modifies task bonus progress. returns True if bonus was newly obtained, returns False if not, or if item was not a bonus item
-    def collect_task_item(self, task, object_id):
-        bonus = f"{task}_bonus"
-
+    def collect_task_item(self, bonus, object_id):
         if bonus in self.tracker_dict:
             if self.tracker_dict[bonus]:
                 return False
@@ -49,25 +48,6 @@ class GameManager:
                 return False
         
         return False
-
-    # modifies quest progress. returns quest item name if quest was newly completed, returns False if not, or if task was not a quest giver
-    def complete_quest(self, task):
-        quest = f"{task}_quest"
-
-        if quest in self.bonus_dict:
-            quest_name = self.bonus_dict[quest]
-            if self.tracker_dict[quest_name]:
-                return False
-
-            self.tracker_dict[quest_name] = True
-            return True
-        
-        return False
-
-    # get the name of a task's quest
-    def get_quest_name(self, task):
-        quest = f"{task}_quest"
-        return self.bonus_dict[quest]
 
     # modifies key inventory. returns True if item was newly obtained, returns False if not, or if item was junk
     def receive_item(self, item):
@@ -95,8 +75,9 @@ class TrackerBuilder:
         self.file_helper = FileHelper()
         self.file_helper.set_root(game_directory / "data")
 
+        self.all_tasks = TASK_IDS
+
         self._gather_languages()
-        self._gather_tasks()
         self._gather_task_strings()
         self._gather_bonus_checks()
 
@@ -118,25 +99,6 @@ class TrackerBuilder:
                 },
                 encoding = 'utf-8',
             )
-
-    def _gather_tasks(self):
-        self.all_tasks = []
-
-        def count_chapter(chapter_id):
-            self.chapter_counter = chapter_id + 1
-            self.task_counter = 1
-
-        def count_task():
-            self.all_tasks.append((self.chapter_counter, self.task_counter))
-            self.task_counter += 1
-
-        self.file_helper.process_script(
-            file = f"comics_{self.default_lang}.txt",
-            commands = {
-                r"stage\((\d+)\)": count_chapter,
-                r"task=.+": count_task,
-            },
-        )
     
     def _gather_task_strings(self):
         self.task_names = {}
@@ -178,7 +140,7 @@ class TrackerBuilder:
             self.has_silhouettes = False
 
             self.file_helper.process_script(
-                file = LEVEL_STRING.format(*task) + ".lvl",
+                file = LEVEL_STRING.format(*task),
                 commands = {
                     r"gamemode=(\d+)": check_gamemode,
                     r"selectmode=(\d+)": check_selectmode,
@@ -194,10 +156,10 @@ class TrackerBuilder:
         output = {}
 
         for check in self.all_tasks:
-            output[LEVEL_STRING.format(*check)] = False
+            output[LOCATION_NAME_STRING.format(*check)] = False
 
         for check in self.bonus_checks:
-            output[LEVEL_STRING.format(*check) + "_bonus"] = False
+            output[LOCATION_NAME_STRING_BONUS.format(*check)] = False
 
         items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS
         for item in items:
@@ -220,7 +182,7 @@ class TrackerBuilder:
                         if task in gatekeeper_dict["gates"]:
                             gates.append(gatekeeper)
 
-                    output[LEVEL_STRING.format(*task)] = list(gates)
+                    output[LOCATION_NAME_STRING.format(*task)] = list(gates)
 
         return output
 
@@ -236,7 +198,7 @@ class TrackerBuilder:
             self.current_id_set = set()
 
             self.file_helper.process_script(
-                file = LEVEL_STRING.format(*check) + ".lvl",
+                file = LEVEL_STRING.format(*check),
                 commands = {
                     r"ar_ids\d+=(\d+)": add_item_id,
                 },
@@ -244,11 +206,7 @@ class TrackerBuilder:
             )
 
             obj_id = list(self.current_id_set).pop() # TODO: make random
-            output[LEVEL_STRING.format(*check) + "_bonus_id"] = obj_id
-
-        for quest, quest_dict in KEY_QUESTS.items():
-            check = quest_dict["task"]
-            output[LEVEL_STRING.format(*check) + "_quest"] = quest
+            output[LOCATION_NAME_STRING_BONUS.format(*check) + " ID"] = obj_id
 
         return output
 
