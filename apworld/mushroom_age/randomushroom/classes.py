@@ -227,6 +227,7 @@ class FilePatcher:
                 str(self.img_directory),
             )
 
+
 class FileHelper:
     def set_root(self, directory):
         self.directory = directory
