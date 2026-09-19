@@ -178,9 +178,9 @@ class TrackerBuilder:
                 for task in self.all_tasks:
                     if chapter != task[0]: continue
 
-                    for gatekeeper, gatekeeper_dict in gatekeepers.items():
+                    for gatekeeper_key, gatekeeper_dict in gatekeepers.items():
                         if task in gatekeeper_dict["gates"]:
-                            gates.append(gatekeeper)
+                            gates.append(gatekeeper_key)
 
                     output[LOCATION_NAME_STRING.format(*task)] = list(gates)
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import operator
 from functools import reduce
 from typing import TYPE_CHECKING
 
@@ -7,6 +8,7 @@ from rule_builder.options import OptionFilter
 from rule_builder.rules import Has, HasAll, Rule
 
 from .randomushroom.key_constants import *
+from .randomushroom.task_ids import *
 
 if TYPE_CHECKING:
     from .world import MushroomAgeWorld
@@ -21,18 +23,18 @@ def set_all_location_rules(world: MushroomAgeWorld) -> None:
 
     for period in TIME_PERIODS.values():
         gates = []
-        for chapter in period_dict["chapters"]:
+        for chapter in period["chapters"]:
             for task in TASK_IDS:
                 if chapter != task[0]: continue
 
-                for gatekeeper_key, gatekeeper in gatekeepers.items():
+                for gatekeeper_key, gatekeeper_dict in gatekeepers.items():
                     if task in gatekeeper_dict["gates"]:
-                        pool_name = gatekeeper.get("pool_name")
+                        pool_name = gatekeeper_dict.get("pool_name")
                         if pool_name is not None:
                             count = PROGRESSION_ITEMS[pool_name].index(gatekeeper_key) + 1
-                            gates.append([gatekeeper["name"], count])
+                            gates.append([gatekeeper_dict["name"], count])
                         else:
-                            gates.append(gatekeeper["name"])
+                            gates.append(gatekeeper_dict["name"])
 
                 if len(gates) == 0:
                     continue
@@ -44,7 +46,7 @@ def set_all_location_rules(world: MushroomAgeWorld) -> None:
                     else:
                         rules_list.append(Has(rule))
                 
-                rule = reduce(operator.or_, rules_list)
+                rule = reduce(operator.and_, rules_list)
 
                 location = world.get_location(LOCATION_NAME_STRING.format(*task))
                 world.set_rule(location, rule)

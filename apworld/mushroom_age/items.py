@@ -39,7 +39,7 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
     item_id = 40
 
     progress_items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS
-    for item in progress_items:
+    for item in progress_items.values():
         if name == item["name"]:
             if item.get("useful", False):
                 classification = ItemClassification.useful
@@ -47,7 +47,7 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
                 classification = ItemClassification.progression
             item_id = item["id"]
     
-    for item in TRAP_ITEMS:
+    for item in TRAP_ITEMS.values():
         if name == item["name"]:
             classification = ItemClassification.trap
             item_id = item["id"]
@@ -60,8 +60,8 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
 def create_all_items(world: MushroomAgeWorld) -> None:
     item_pool = []
 
-    all_items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS
-    for item in all_items:
+    all_items = KEY_ITEMS | KEY_PHONE_NUMBERS
+    for item in all_items.values():
         item_pool.append(world.create_item(item["name"]))
 
     number_of_items = len(item_pool)
@@ -69,4 +69,4 @@ def create_all_items(world: MushroomAgeWorld) -> None:
     needed_number_of_filler_items = number_of_unfilled_locations - number_of_items
     item_pool.extend([world.create_filler() for _ in range(needed_number_of_filler_items)])
 
-    world.multiworld.itempool += itempool
+    world.multiworld.itempool += item_pool

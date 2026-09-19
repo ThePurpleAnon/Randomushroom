@@ -65,7 +65,7 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
 
 def create_events(world: MushroomAgeWorld) -> None:
     for quest in KEY_QUESTS.values():
-        quest_item = items.APQuestItem(quest["name"], ItemClassification.progression, None, world.player)
-        location = world.get_location(LOCATION_NAME_STRING.format(*quest["task_id"]), world.player)
+        quest_item = items.MushroomAgeItem(quest["name"], ItemClassification.progression, None, world.player)
+        location = world.get_location(LOCATION_NAME_STRING.format(*quest["task"]))
 
         location.place_locked_item(quest_item)
