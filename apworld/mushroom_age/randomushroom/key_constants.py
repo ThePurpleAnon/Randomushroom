@@ -40,6 +40,30 @@ TRAP_ITEMS = {
     "main_menu": {"id": 30, "name": "Main Menu Trap"},
 }
 
-FILLER_ITEMS = ["Hourglass", "Mushroom Spores", "Photo of Professor Einbock's Wife"]
+FILLER_ITEMS = [
+    "Handkerchief Soaked With Ammonium Chloride", "Picture of the Professor's Wife", "Hourglass", # chapter 1 references
+    "Sledgehammer", "Cybernetics", "Tombstone Name Plate", "Hologram Box", # chapter 2 references
+    # chapter 3 references
+    # chapter 4 references
+    # chapter 5 references
+    # chapter 6 references
+    # chapter 7 references
+    # chapter 8 references
+    # chapter 9 references
+    # chapter 10 references
+    # chapter 11 references
+    # chapter 12 references
+    # chapter 13 references
+    # chapter 14 references
+    # chapter 15 references
+    # chapter 16 references
+    # chapter 17 references
+    # chapter 18 references
+    # chapter 19 references
+    # chapter 20 references
+    # chapter 21 references
+    # chapter 22 references
+    # chapter 23 references
+]
 
 LEVEL_STRING = "level_{0:02}_{1:02}.lvl"
