@@ -13,7 +13,7 @@ TIME_PERIODS = {
 KEY_ITEMS = {
     "elixir":        {"id": 0, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [( 4,  2), ( 5,  1)]},
     "total_elixir":  {"id": 1, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [(22,  3)]},
-    "painting":      {"id": 2, "name": "Professor's Painting",                "gates": [( 7,  2)]},
+    "painting":      {"id": 2, "name": "Professor's Painting",                "gates": [( 6,  4), ( 7,  2)]},
     "timequake":     {"id": 3, "name": "Timequake",                           "gates": [( 9,  1), (10,  1), (11,  1), (13,  1), (14,  1), (15,  1), (16,  1)]},
     "toilet":        {"id": 4, "name": "Toilet Time Machine", "useful": True, "gates": [(12,  1)]},
     "mushroom_soup": {"id": 5, "name": "Mushroom Soup",                       "gates": [(23,  1)]},
@@ -41,29 +41,59 @@ TRAP_ITEMS = {
 }
 
 FILLER_ITEMS = [
-    "Handkerchief Soaked With Ammonium Chloride", "Picture of the Professor's Wife", "Hourglass", # chapter 1 references
-    "Sledgehammer", "Cybernetics", "Tombstone Name Plate", "Hologram Box", # chapter 2 references
-    # chapter 3 references
+    # chapter 1 references
+    "Handkerchief Soaked With Ammonium Chloride", "Picture of a Man Who Does Not Look Like the Professor's Wife",
+    "Picture of the Professor's Wife", "Hourglass", "Stopwatch", "Rubber Plant",
+    # chapter 2 references
+    "Sledgehammer", "Cybernetics", "Tombstone Name Plate", "Hologram Box",
+    # chapter 3 references (fun fact, all the zodiac images in the game's files are numbered, i.e. zodiak_9.tga etc, but they're still ordered according to alphabetical order rather than chronology)
+    "Aquarius Zodiac", "Aries Zodiac", "Cancer Zodiac", "Capricorn Zodiac", "Gemini Zodiac", "Leo Zodiac",
+    "Libra Zodiac", "Pisces Zodiac", "Sagittarius Zodiac", "Scorpius Zodiac", "Taurus Zodiac", "Virgo Zodiac",
     # chapter 4 references
+    "String", "Toothbrush", "Rotten Tooth", "Birthday Cake", "Picture of Tom Scout",
     # chapter 5 references
+    "Box of Matches", "Firewood", "Stone Ax", "Piece of Flint", "Piece of Dry Bark",
     # chapter 6 references
+    "Large Letter Sigma", "Letter Omega", "Letter Kappa", "Letter Rho", "Letter Alpha", "Letter Tau", "Letter Eta", "Letter Sigma",
     # chapter 7 references
+    "Piece of Cheese", "Professor's Pill", "Globe", "Starfish", "Vodka?" # unused 7-4 string
     # chapter 8 references
+    "Pair of NevoShoes Sneakers", "Mushroom Spores", "Warning Note From Tom",
     # chapter 9 references
+    "Fuse", "Rubber Gloves", "Regular Mobile Phone", "Satellite Dish", "Omelet From the Jurassic Period",
     # chapter 10 references
+    "At Sign Zodiac", "Dollar Sign Zodiac", "Taijitu Zodiac", "NevoSoft Zodiac", "Mars Zodiac", "Venus Zodiac",
     # chapter 11 references
+    "Picture of Napoleon Bonaparte", "Picture of Albert Einstein", "Picture of Abaraham Lincoln", "Picture of George Washington",
+    "Picture of Dmitri Mendeleyev", "Picture of Karl Marx", "Picture of Genghis Khan", "Picture of the Dalai Lama",
     # chapter 12 references
+    "System Error Log of the Universe", "Yellow Ball", "Red Ball", "God's Phone Number",
     # chapter 13 references
+    "Number 7", "Drum", "Drumstick", "Saxophone", "Number 2", "Number 5", "Lowercase Letter T", "Piece of Ugu's Sacred Fang Necklace",
     # chapter 14 references
+    "Cockroach", "Centipede", "Frog", "Bug", "Monkey", "Lizard", "Parrot", "Butterfly", "Spider", "Mouse", "Bat",
     # chapter 15 references
+    "Loaned Money", "Clothes", "Money From the Palace", "Barrel of Wine",
     # chapter 16 references
+    "Robo-checkers Ball", "Pair of Headphones", "Fax Machine", "Book", "Seashell", "Tiny Toadstool",
     # chapter 17 references
+    "Toolbox", "Screwdriver", "Wirecutters", "Hammer",
     # chapter 18 references
+    "Mirror", "Leonardo da Vinci's Mona Lisa Outfit",
     # chapter 19 references
+    "Defective Duck-Shaped Annihilator", "Scotch Tape", "Piece of Hose", "Faucet Handle", "Piece of UM-21's Broken Motherboard",
     # chapter 20 references
+    "Computer Game Disc", "Crudely Drawn Picture of a Car", "Crudely Drawn Picture of a Happy Face", "Crudely Drawn Picture of a House",
     # chapter 21 references
+    "Picture of Alexander the Great", "Picture of Wolfgang Amadeus Mozart", "Picture of Arnold Schwarzenegger", "Picture of Talking Flower",
+    "Ten of Hearts Card", "King of Spades Card", "King of Hearts Card", "Queen of Clubs Card",
+    "Queen of Diamonds Card", "Jack of Spades Card", "Jack of Diamonds Card", "Joker Card",
     # chapter 22 references
+    "Empty Bottle", "Edible Mushroom", "Poisonous Mushroom", "Sentient Mushroom",
     # chapter 23 references
+    "Professor's Suit", "Shovel", "Manhole Cover", "Crowbar", "Kiwi", "Grapes", "Pear", "Watermelon", "Apple", "Banana", "Rose", "Advertisement",
 ]
+
+FILLER_SUFFIX = " (Junk)"
 
 LEVEL_STRING = "level_{0:02}_{1:02}.lvl"

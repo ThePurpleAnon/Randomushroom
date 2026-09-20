@@ -21,7 +21,7 @@ def item_names_to_ids() -> dict[str, int]:
         items[item["name"]] = item["id"]
     
     for i, item in enumerate(FILLER_ITEMS):
-        items[item] = 40 + i
+        items[item + FILLER_SUFFIX] = 40 + i
 
     return items
 
@@ -32,7 +32,7 @@ def get_random_filler_item_name(world: MushroomAgeWorld) -> str:
         return trap
 
     item = world.random.choice(FILLER_ITEMS)
-    return item
+    return item + FILLER_SUFFIX
 
 def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) -> MushroomAgeItem:
     classification = ItemClassification.filler
@@ -51,9 +51,10 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
         if name == item["name"]:
             classification = ItemClassification.trap
             item_id = item["id"]
-    
-    if item in FILLER_ITEMS:
-        item_id += FILLER_ITEMS.index(name)
+
+    junk_name = name.removesuffix(FILLER_SUFFIX)
+    if junk_name in FILLER_ITEMS:
+        item_id += FILLER_ITEMS.index(junk_name)
 
     return MushroomAgeItem(name, classification, item_id, world.player)
 
