@@ -15,7 +15,7 @@ KEY_ITEMS = {
     "total_elixir":  {"id": 1, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [(22,  3)]},
     "painting":      {"id": 2, "name": "Professor's Painting",                "gates": [( 6,  4), ( 7,  2)]},
     "timequake":     {"id": 3, "name": "Timequake",                           "gates": [( 9,  1), (10,  1), (11,  1), (13,  1), (14,  1), (15,  1), (16,  1)]},
-    "toilet":        {"id": 4, "name": "Toilet Time Machine", "useful": True, "gates": [(12,  1)]},
+    "toilet":        {"id": 4, "name": "Toilet Time Machine",                 "gates": [(12,  1)]},
     "mushroom_soup": {"id": 5, "name": "Mushroom Soup",                       "gates": [(23,  1)]},
 }
 
