@@ -21,7 +21,7 @@ def item_names_to_ids() -> dict[str, int]:
         items[item["name"]] = item["id"]
     
     for i, item in enumerate(FILLER_ITEMS):
-        items[item + FILLER_SUFFIX] = 40 + i
+        items[item + FILLER_SUFFIX] = FILLER_ITEMS_ID + i
 
     return items
 
@@ -36,7 +36,7 @@ def get_random_filler_item_name(world: MushroomAgeWorld) -> str:
 
 def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) -> MushroomAgeItem:
     classification = ItemClassification.filler
-    item_id = 40
+    item_id = FILLER_ITEMS_ID
 
     progress_items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS
     for item in progress_items.values():

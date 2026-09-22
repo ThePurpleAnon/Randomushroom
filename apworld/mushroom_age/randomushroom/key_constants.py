@@ -40,6 +40,7 @@ TRAP_ITEMS = {
     "main_menu": {"id": 30, "name": "Main Menu Trap"},
 }
 
+FILLER_ITEMS_ID = 40
 FILLER_ITEMS = [
     # chapter 1 references
     "Handkerchief Soaked With Ammonium Chloride", "Picture of a Man Who Does Not Look Like the Professor's Wife",
