@@ -26,7 +26,7 @@ def get_location_names_with_ids(location_dicts: list[dict]) -> dict[str, int | N
     return_dict = {}
 
     for location in location_dicts:
-        location_id = (location["task_id"][0]) * 10000 + (location["task_id"][1] * 100)
+        location_id = (location["task_id"][0]) * 1000 + (location["task_id"][1] * 10)
 
         replace_with_none = False
         for quest in KEY_QUESTS.values():
