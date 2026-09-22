@@ -11,7 +11,7 @@ TIME_PERIODS = {
 }
 
 KEY_ITEMS = {
-    "elixir":        {"id": 0, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [( 4,  2), ( 5,  1)]},
+    "elixir":        {"id": 1, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [( 4,  2), ( 5,  1)]},
     "total_elixir":  {"id": 1, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [(22,  3)]},
     "painting":      {"id": 2, "name": "Professor's Painting",                "gates": [( 6,  4), ( 7,  2)]},
     "timequake":     {"id": 3, "name": "Timequake",                           "gates": [( 9,  1), (10,  1), (11,  1), (13,  1), (14,  1), (15,  1), (16,  1)]},
