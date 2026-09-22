@@ -51,7 +51,7 @@ def create_gate_dict(world = None):
                     for rule in gates:
                         rules_list.append(Has(rule[0], count = rule[1]))
                 else: # if returning a dict
-                    gate_dict[task[0] - 1, task[1] - 1] = list(gates)
+                    gate_dict[(task[0] - 1) * 100 + (task[1] - 1)] = list(gates)
                     continue
 
                 rule = reduce(operator.and_, rules_list)
