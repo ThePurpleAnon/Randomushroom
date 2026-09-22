@@ -1,4 +1,4 @@
-from worlds.LauncherComponents import Component, Type, components, launch
+from worlds.LauncherComponents import Component, Type, components, launch, icon_paths
 import settings
 import asyncio
 
@@ -13,6 +13,7 @@ async def run_client_async(ap_url = None):
     await client.initialize()
     await client.start(ap_url)
 
+icon_paths["mushroom_age_icon"] = f"ap:{__name__}/data/img_icon.png"
 components.append(
     Component(
         "Mushroom Age Client",
@@ -20,6 +21,7 @@ components.append(
         game_name = "Mushroom Age",
         component_type = Type.CLIENT,
         supports_uri = True,
+        icon = "mushroom_age_icon",
     )
 )
 
