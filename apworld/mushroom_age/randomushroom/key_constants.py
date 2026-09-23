@@ -57,7 +57,7 @@ FILLER_ITEMS = [
     # chapter 6 references
     "Large Letter Sigma", "Letter Omega", "Letter Kappa", "Letter Rho", "Letter Alpha", "Letter Tau", "Letter Eta", "Letter Sigma",
     # chapter 7 references
-    "Piece of Cheese", "Professor's Pill", "Globe", "Starfish", "Vodka?" # unused 7-4 string
+    "Piece of Cheese", "Professor's Pill", "Globe", "Starfish", "Vodka?", # unused 7-4 string
     # chapter 8 references
     "Pair of NevoShoes Sneakers", "Mushroom Spores", "Warning Note From Tom",
     # chapter 9 references
