@@ -16,8 +16,8 @@ class MushroomAgeLocation(Location):
     game = "Mushroom Age"
 
 def location_names_to_ids() -> dict[str, int | None]:
-    locations = get_location_names_with_ids([{"task_id": task_id, "bonus": False} for task_id in TASK_IDS])
-    locations |= get_location_names_with_ids([{"task_id": task_id, "bonus": True} for task_id in BONUS_ITEM_TASKS])
+    locations = get_location_names_with_ids([{"task_id": task_id, "offset": 0, "string": LOCATION_NAME_STRING} for task_id in TASK_IDS])
+    locations |= get_location_names_with_ids([{"task_id": task_id, "offset": 1, "string": LOCATION_NAME_STRING_BONUS} for task_id in BONUS_ITEM_TASKS])
 
     return locations
 
@@ -27,16 +27,7 @@ def get_location_names_with_ids(location_dicts: list[dict]) -> dict[str, int | N
 
     for location in location_dicts:
         location_id = (location["task_id"][0]) * 1000 + (location["task_id"][1] * 10)
-
-        replace_with_none = False
-        for quest in KEY_QUESTS.values():
-            if location["task_id"] == quest["task"]:
-                replace_with_none = True
-
-        if location["bonus"]:
-            return_dict[LOCATION_NAME_STRING_BONUS.format(*location["task_id"])] = location_id + 1
-        else:
-            return_dict[LOCATION_NAME_STRING.format(*location["task_id"])] = None if replace_with_none else location_id
+        return_dict[location["string"].format(*location["task_id"])] = location_id + location["offset"]
 
     return return_dict
 
@@ -50,13 +41,13 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
         region = world.get_region(time_period["name"])
 
         locations = get_location_names_with_ids(
-            [{"task_id": task_id, "bonus": False} for task_id in (
+            [{"task_id": task_id, "offset": 0, "string": LOCATION_NAME_STRING} for task_id in (
                 t for t in TASK_IDS if t[0] in set(time_period["chapters"])
             )]
         )
 
         locations |= get_location_names_with_ids(
-            [{"task_id": task_id, "bonus": True} for task_id in (
+            [{"task_id": task_id, "offset": 1, "string": LOCATION_NAME_STRING_BONUS} for task_id in (
                 t for t in BONUS_ITEM_TASKS if t[0] in set(time_period["chapters"])
             )]
         )
