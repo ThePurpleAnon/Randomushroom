@@ -1,5 +1,6 @@
 LOCATION_NAME_STRING = "Task {0}-{1}"
 LOCATION_NAME_STRING_BONUS = "Task {0}-{1} Bonus Item"
+LOCATION_NAME_STRING_QUEST = "Task {0}-{1} Quest"
 
 TIME_PERIODS = {
     "lab_2008":      {"name": "Einbock's Lab",       "chapters": [ 1,  7,  9, 20]},

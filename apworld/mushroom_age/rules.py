@@ -65,6 +65,11 @@ def create_gate_dict(world, return_dict = False):
                 if task in BONUS_ITEM_TASKS:
                     location = world.get_location(LOCATION_NAME_STRING_BONUS.format(*task))
                     world.set_rule(location, rule)
+
+                for quest in KEY_QUESTS.values():
+                    if task != quest["task"]: continue
+                    location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*task))
+                    world.set_rule(location, rule)
     
     if return_dict:
         return gate_dict
