@@ -14,10 +14,6 @@ if TYPE_CHECKING:
 
 
 def set_all_rules(world: MushroomAgeWorld) -> None:
-    set_all_location_rules(world)
-    set_completion_condition(world)
-
-def set_all_location_rules(world: MushroomAgeWorld) -> None:
     create_gate_dict(world)
 
 def create_gate_dict(world, return_dict = False):
@@ -36,7 +32,7 @@ def create_gate_dict(world, return_dict = False):
                 if chapter != task[0]: continue
 
                 for gatekeeper_key, gatekeeper_dict in gatekeepers.items():
-                    if task in gatekeeper_dict["gates"]:
+                    if task in gatekeeper_dict.get("gates", []):
                         pool_name = gatekeeper_dict.get("pool_name")
                         if pool_name is not None:
                             count = PROGRESSION_ITEMS[pool_name].index(gatekeeper_key) + 1
@@ -70,9 +66,17 @@ def create_gate_dict(world, return_dict = False):
                     if task != quest["task"]: continue
                     location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*task))
                     world.set_rule(location, rule)
-    
+
+    # set completion rule
+    item_name_or_id = "id" if return_dict else "name"
+
+    item = KEY_QUESTS["victory"][item_name_or_id]
+    item_amt = 1
+
+    if return_dict: # if returning a dict
+        gate_dict[-1] = [[item, item_amt]]
+    else: # if setting locations for world
+        world.set_completion_rule(Has(item, count = item_amt))
+
     if return_dict:
         return gate_dict
-
-def set_completion_condition(world: MushroomAgeWorld) -> None:
-    world.set_completion_rule(Has(KEY_QUESTS["victory"]["name"]))

@@ -24,11 +24,11 @@ KEY_ITEMS = {
 }
 
 KEY_QUESTS = {
-    "professor_hope": {"id": 10, "name": "Gave Professor Einbock Hope That His Wife May Return", "task": ( 7,  4), "gates": [(23,  1)]},
-    "tom_return":     {"id": 11, "name": "Returned Tom Safely to 2008",                          "task": (13,  5), "gates": [(23,  1)]},
-    "uber_mushroom":  {"id": 12, "name": "Appeased the Über-Mushroom",                           "task": (22,  3), "gates": [(23,  1)]},
-    "wedding_rings":  {"id": 13, "name": "Found the Wedding Rings",                              "task": (23,  1), "gates": [(23,  2)]},
-    "victory":        {"id": 14, "name": "Got Married to Tom Scout",                             "task": (23,  2), "gates": []},
+    "professor_hope": {"id": 10, "name": "Give Professor Einbock Hope", "task": ( 7,  4), "gates": [(23,  1)]},
+    "tom_return":     {"id": 11, "name": "Return Tom Safely to 2008",   "task": (13,  5), "gates": [(23,  1)]},
+    "uber_mushroom":  {"id": 12, "name": "Appease the Über-Mushroom",   "task": (22,  3), "gates": [(23,  1)]},
+    "wedding_rings":  {"id": 13, "name": "Find the Wedding Rings",      "task": (23,  1), "gates": [(23,  2)]},
+    "victory":        {"id": 14, "name": "Get Married to Tom Scout",    "task": (23,  2)},
 }
 
 KEY_PHONE_NUMBERS = {
