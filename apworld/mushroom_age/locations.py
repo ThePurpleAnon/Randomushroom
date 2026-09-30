@@ -48,7 +48,12 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
     for task in TASK_IDS:
         region = chapter_regions[task[0]]
         locations = {}
-        for name_string in [LOCATION_NAME_STRING, LOCATION_NAME_STRING_BONUS, LOCATION_NAME_STRING_QUEST]:
+
+        location_strings = [LOCATION_NAME_STRING, LOCATION_NAME_STRING_BONUS]
+        if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
+            location_strings.append(LOCATION_NAME_STRING_QUEST)
+
+        for name_string in location_strings:
             location_name = name_string.format(*task)
             if location_name in all_locations:
                 locations[location_name] = all_locations[location_name]
@@ -56,22 +61,25 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
         region.add_locations(locations, MushroomAgeLocation)
 
 def create_events(world: MushroomAgeWorld) -> None:
-    for quest in KEY_QUESTS.values():
-        quest_item = items.MushroomAgeItem(quest["name"], ItemClassification.progression, None, world.player)
-        location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*quest["task"]))
+    if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
+        for quest in KEY_QUESTS.values():
+            quest_item = items.MushroomAgeItem(quest["name"], ItemClassification.progression, None, world.player)
+            location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*quest["task"]))
 
-        location.place_locked_item(quest_item)
+            location.place_locked_item(quest_item)
 
 
 def create_event_dict(world):
     quest_dict = {}
-    for quest in KEY_QUESTS.values():
-        task = quest["task"]
-        task_id = ((task[0] - 1) * 100) + (task[1] - 1)
 
-        if task_id not in quest_dict:
-            quest_dict[task_id] = []
+    if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
+        for quest in KEY_QUESTS.values():
+            task = quest["task"]
+            task_id = ((task[0] - 1) * 100) + (task[1] - 1)
 
-        quest_dict[task_id].append(quest["id"])
+            if task_id not in quest_dict:
+                quest_dict[task_id] = []
+
+            quest_dict[task_id].append(quest["id"])
 
     return quest_dict

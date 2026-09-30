@@ -16,7 +16,7 @@ class MushroomAgeItem(Item):
 def item_names_to_ids() -> dict[str, int]:
     items = {}
 
-    items_to_check = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS | TRAP_ITEMS
+    items_to_check = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS | TRAP_ITEMS | {"dino_egg": DINO_EGG_ITEM}
     for item in items_to_check.values():
         items[item["name"]] = item["id"]
     
@@ -38,7 +38,7 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
     classification = ItemClassification.filler
     item_id = FILLER_ITEMS_ID
 
-    progress_items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS
+    progress_items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS | {"dino_egg": DINO_EGG_ITEM}
     for item in progress_items.values():
         if name == item["name"]:
             if item.get("useful", False):
@@ -72,6 +72,14 @@ def create_all_items(world: MushroomAgeWorld) -> None:
     number_of_items = len(item_pool)
     number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
     needed_number_of_filler_items = number_of_unfilled_locations - number_of_items
+    
+    if world.options.victory_condition.current_key == "collect_dinosaur_eggs": # if dino eggs are the win condition
+        egg_amount = min(world.options.egg_amount, needed_number_of_filler_items)
+        world.dino_egg_amount = egg_amount
+
+        item_pool.extend([world.create_item(DINO_EGG_ITEM["name"]) for _ in range(egg_amount)])
+        needed_number_of_filler_items -= egg_amount
+
     item_pool.extend([world.create_filler() for _ in range(needed_number_of_filler_items)])
 
     world.multiworld.itempool += item_pool

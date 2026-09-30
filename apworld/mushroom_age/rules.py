@@ -17,10 +17,13 @@ def set_all_rules(world: MushroomAgeWorld) -> None:
     set_gates(world, return_dict = False)
 
 def set_gates(world, return_dict):
-    gatekeepers = KEY_ITEMS | KEY_QUESTS
+    gatekeepers = KEY_ITEMS
 
     if world.options.phone_numbers: # if phone numbers are in the pool
         gatekeepers |= KEY_PHONE_NUMBERS
+
+    if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
+        gatekeepers |= KEY_QUESTS
 
     gate_dict = {}
     name_or_id = "id" if return_dict else "name"
@@ -62,16 +65,24 @@ def set_gates(world, return_dict):
                     location = world.get_location(LOCATION_NAME_STRING_BONUS.format(*task))
                     world.set_rule(location, rule)
 
-                for quest in KEY_QUESTS.values():
-                    if task != quest["task"]: continue
-                    location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*task))
-                    world.set_rule(location, rule)
+                if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
+                    for quest in KEY_QUESTS.values():
+                        if task != quest["task"]: continue
+                        location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*task))
+                        world.set_rule(location, rule)
 
     # set completion rule
     item_name_or_id = "id" if return_dict else "name"
 
-    item = KEY_QUESTS["victory"][item_name_or_id]
-    item_amt = 1
+    match world.options.victory_condition.current_key:
+        case "get_married":
+            item = KEY_QUESTS["victory"][item_name_or_id]
+            item_amt = 1
+        case "collect_dinosaur_eggs":
+            item = DINO_EGG_ITEM[item_name_or_id]
+            item_amt = max(1, round(world.dino_egg_amount.value * (world.options.egg_percent / 100)))
+        case _:
+            raise ValueError("Victory condition is improperly defined!")
 
     if return_dict: # if returning a dict
         # gate_dict key -1 is reserved for win conditions

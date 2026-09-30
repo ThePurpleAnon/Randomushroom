@@ -23,6 +23,8 @@ KEY_ITEMS = {
     "mushroom_soup": {"id": 5, "name": "Mushroom Soup",                       "gates": [(23,  1)]},
 }
 
+DINO_EGG_ITEM = {"id": 6, "name": "Dinosaur Egg"}
+
 KEY_QUESTS = {
     "professor_hope": {"id": 10, "name": "Give Professor Einbock Hope", "task": ( 7,  4), "gates": [(23,  1)]},
     "tom_return":     {"id": 11, "name": "Return Tom Safely to 2008",   "task": (13,  5), "gates": [(23,  1)]},
