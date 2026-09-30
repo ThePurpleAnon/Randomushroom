@@ -14,9 +14,9 @@ if TYPE_CHECKING:
 
 
 def set_all_rules(world: MushroomAgeWorld) -> None:
-    create_gate_dict(world)
+    set_gates(world, return_dict = False)
 
-def create_gate_dict(world, return_dict = False):
+def set_gates(world, return_dict):
     gatekeepers = KEY_ITEMS | KEY_QUESTS
 
     if world.options.phone_numbers: # if phone numbers are in the pool
@@ -74,9 +74,14 @@ def create_gate_dict(world, return_dict = False):
     item_amt = 1
 
     if return_dict: # if returning a dict
+        # gate_dict key -1 is reserved for win conditions
         gate_dict[-1] = [[item, item_amt]]
     else: # if setting locations for world
         world.set_completion_rule(Has(item, count = item_amt))
 
     if return_dict:
         return gate_dict
+
+
+def create_gate_dict(world):
+    return set_gates(world, return_dict = True)

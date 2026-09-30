@@ -61,3 +61,17 @@ def create_events(world: MushroomAgeWorld) -> None:
         location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*quest["task"]))
 
         location.place_locked_item(quest_item)
+
+
+def create_event_dict(world):
+    quest_dict = {}
+    for quest in KEY_QUESTS.values():
+        task = quest["task"]
+        task_id = ((task[0] - 1) * 100) + (task[1] - 1)
+
+        if task_id not in quest_dict:
+            quest_dict[task_id] = []
+
+        quest_dict[task_id].append(quest["id"])
+
+    return quest_dict

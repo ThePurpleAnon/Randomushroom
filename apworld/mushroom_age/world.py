@@ -41,5 +41,6 @@ class MushroomAgeWorld(World):
 
     def fill_slot_data(self) -> Mapping[str, Any]:
         return {
-            "gate_dict": rules.create_gate_dict(self, return_dict = True)
+            "gate_dict": rules.create_gate_dict(self),
+            "quest_dict": locations.create_event_dict(self),
         }
