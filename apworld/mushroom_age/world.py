@@ -5,11 +5,13 @@ from worlds.AutoWorld import World
 
 from . import items, locations, regions, rules, web_world
 from . import options as mushroom_age_options
+from .game_constants import *
 
 class MushroomAgeWorld(World):
     """
     Mushroom Age is an I-Spy Point-and-Click adventure game about time travel.
     """
+    ut_can_gen_without_yaml = True
 
     game = "Mushroom Age"
 
@@ -43,4 +45,32 @@ class MushroomAgeWorld(World):
         return {
             "gate_dict": rules.create_gate_dict(self),
             "quest_dict": locations.create_event_dict(self),
+            "constants": {
+                "CH_MULT": CH_MULT,
+                "TK_MULT": TK_MULT,
+                "MAIN_MENU_TRAP": MAIN_MENU_TRAP,
+            },
+            "options": self.options.as_dict(
+                "victory_condition", "egg_amount", "egg_percent", "phone_numbers"
+            ),
         }
+
+    # grabbed from UT docs
+    @staticmethod
+    def interpret_slot_data(slot_data: dict[str, Any]) -> dict[str, Any]:
+        # Trigger a regen in UT
+        return slot_data
+
+    def generate_early(self) -> None:
+        re_gen_passthrough = getattr(self.multiworld, "re_gen_passthrough", {})
+        if re_gen_passthrough and self.game in re_gen_passthrough:
+            # Get the passed through slot data from the real generation
+            slot_data: dict[str, Any] = re_gen_passthrough[self.game]
+
+            slot_options: dict[str, Any] = slot_data.get("options", {})
+            # Set all your options here instead of getting them from the yaml
+            for key, value in slot_options.items():
+                opt: Optional[Option] = getattr(self.options, key, None)
+                if opt is not None:
+                    # You can also set .value directly but that won't work if you have OptionSets
+                    setattr(self.options, key, opt.from_any(value))

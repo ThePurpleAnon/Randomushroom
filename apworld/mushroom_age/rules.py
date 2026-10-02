@@ -14,50 +14,29 @@ if TYPE_CHECKING:
 
 
 def set_all_rules(world: MushroomAgeWorld) -> None:
-    set_gates(world, return_dict = False)
+    set_gates(world)
 
-def set_gates(world, return_dict):
-    gatekeepers = KEY_ITEMS
+def set_gates(world: MushroomAgeWorld) -> None:
+    gate_dict = create_gate_dict(world)
 
-    if world.options.phone_numbers: # if phone numbers are in the pool
-        gatekeepers |= KEY_PHONE_NUMBERS
+    for task_key, gates in gate_dict.items():
+        if task_key == -1:
+            task = None
+        else:
+            task = (
+                (task_key // CH_MULT) + 1,
+                (task_key % CH_MULT) + 1
+            )
 
-    if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
-        gatekeepers |= KEY_QUESTS
+        rules_list = []
+        for rule_tuple in gates:
+            rules_list.append(Has(GAME_ITEMS[rule_tuple[0]]["name"], count = rule_tuple[1]))
 
-    gate_dict = {}
-    name_or_id = "id" if return_dict else "name"
+            rule = reduce(operator.and_, rules_list)
 
-    for period in TIME_PERIODS.values():
-        gates = []
-        for chapter in period["chapters"]:
-            for task in TASK_IDS:
-                if chapter != task[0]: continue
-
-                for gatekeeper_key, gatekeeper_dict in gatekeepers.items():
-                    if task in gatekeeper_dict.get("gates", []):
-                        pool_name = gatekeeper_dict.get("pool_name")
-                        if pool_name is not None:
-                            count = PROGRESSION_ITEMS[pool_name].index(gatekeeper_key) + 1
-                            gates.append([gatekeeper_dict[name_or_id], count])
-                        else:
-                            gates.append([gatekeeper_dict[name_or_id], 1])
-
-                rules_list = []
-
-                if len(gates) == 0:
-                    if not return_dict:
-                        continue
-
-                if return_dict: # if returning a dict
-                    gate_dict[(task[0] - 1) * 100 + (task[1] - 1)] = list(gates)
-                    continue
-                else: # if setting locations for world
-                    for rule in gates:
-                        rules_list.append(Has(rule[0], count = rule[1]))
-
-                rule = reduce(operator.and_, rules_list)
-
+            if task is None:
+                world.set_completion_rule(rule)
+            else:
                 location = world.get_location(LOCATION_NAME_STRING.format(*task))
                 world.set_rule(location, rule)
 
@@ -65,34 +44,51 @@ def set_gates(world, return_dict):
                     location = world.get_location(LOCATION_NAME_STRING_BONUS.format(*task))
                     world.set_rule(location, rule)
 
-                if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
-                    for quest in KEY_QUESTS.values():
-                        if task != quest["task"]: continue
-                        location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*task))
+                victory_cond = world.options.victory_condition.current_key
+                use_quests = VICTORY_CONDITIONS[victory_cond]["use_quests"]
+                if use_quests:
+                    for quest_task in KEY_QUESTS.values():
+                        if task != quest_task: continue
+                        location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*quest_task))
                         world.set_rule(location, rule)
 
+
+def create_gate_dict(world: MushroomAgeWorld) -> dict[int, list]:
+    gatekeepers = KEY_ITEMS
+
+    if world.options.phone_numbers: # if extra region locks are included in the pool
+        gatekeepers += KEY_REGION_ITEMS
+
+    victory_cond = world.options.victory_condition.current_key
+    use_quests = VICTORY_CONDITIONS[victory_cond]["use_quests"]
+    if use_quests:
+        gatekeepers += list(KEY_QUESTS.keys())
+
+    gate_dict = {}
+
+    for period in REGIONS.values():
+        gates = []
+        for chapter in period["chapters"]:
+            for task in TASK_IDS:
+                if chapter != task[0]: continue
+
+                for item_gate_id, task_gates in GAME_GATES:
+                    if item_gate_id[0] not in gatekeepers: continue
+
+                    if task in task_gates:
+                        gates.append(item_gate_id)
+
+                gate_dict[(task[0] - 1) * CH_MULT + (task[1] - 1)] = list(gates)
+
     # set completion rule
-    item_name_or_id = "id" if return_dict else "name"
+    gate_dict[-1] = []
+    for item, item_amt in VICTORY_CONDITIONS[victory_cond].get("items", []):
+        gate_dict[-1].append([item, item_amt])
+    
+    macguffins = VICTORY_CONDITIONS[victory_cond].get("macguffins")
+    if macguffins is not None:
+        macguffin_amt = max(1, round(world.dino_egg_amount.value * (world.options.egg_percent / 100)))
+        gate_dict[-1].append([macguffins, macguffin_amt])
+        
 
-    match world.options.victory_condition.current_key:
-        case "get_married":
-            item = KEY_QUESTS["victory"][item_name_or_id]
-            item_amt = 1
-        case "collect_dinosaur_eggs":
-            item = DINO_EGG_ITEM[item_name_or_id]
-            item_amt = max(1, round(world.dino_egg_amount.value * (world.options.egg_percent / 100)))
-        case _:
-            raise ValueError("Victory condition is improperly defined!")
-
-    if return_dict: # if returning a dict
-        # gate_dict key -1 is reserved for win conditions
-        gate_dict[-1] = [[item, item_amt]]
-    else: # if setting locations for world
-        world.set_completion_rule(Has(item, count = item_amt))
-
-    if return_dict:
-        return gate_dict
-
-
-def create_gate_dict(world):
-    return set_gates(world, return_dict = True)
+    return gate_dict

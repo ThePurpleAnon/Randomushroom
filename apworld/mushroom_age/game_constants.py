@@ -2,7 +2,7 @@ LOCATION_NAME_STRING = "Task {0}-{1}"
 LOCATION_NAME_STRING_BONUS = "Task {0}-{1} Bonus Item"
 LOCATION_NAME_STRING_QUEST = "Task {0}-{1} Quest"
 
-TIME_PERIODS = {
+REGIONS = {
     "lab_2008":      {"name": "Einbock's Lab",       "chapters": [ 1,  7,  9, 20]},
     "cemetary_3008": {"name": "Cemetary",            "chapters": [ 2, 13, 17, 19]},
     "nostradamus":   {"name": "Nostradamus",         "chapters": [ 3, 11, 21]},
@@ -14,40 +14,60 @@ TIME_PERIODS = {
     "wedding":       {"name": "Happy Ending",        "chapters": [23]},
 }
 
-KEY_ITEMS = {
-    "elixir":        {"id": 1, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [( 4,  1), ( 5,  1)]},
-    "total_elixir":  {"id": 1, "name": "Progressive Elixir of Understanding", "pool_name": "progressive_elixir", "gates": [(22,  1)]},
-    "painting":      {"id": 2, "name": "Professor's Painting",                "gates": [( 7,  1)]},
-    "timequake":     {"id": 3, "name": "Timequake",                           "gates": [( 9,  1), (10,  1), (11,  1), (13,  1), (14,  1), (15,  1), (16,  1)]},
-    "toilet":        {"id": 4, "name": "Toilet Time Machine",                 "gates": [(12,  1)]},
-    "mushroom_soup": {"id": 5, "name": "Mushroom Soup",                       "gates": [(23,  1)]},
+GAME_ITEMS = {
+     1: {"type": "progression", "name": "Progressive Elixir of Understanding"},
+     2: {"type": "progression", "name": "Professor's Painting"},
+     3: {"type": "progression", "name": "Timequake"},
+     4: {"type": "progression", "name": "Toilet Time Machine"},
+     5: {"type": "progression", "name": "Mushroom Soup"},
+     6: {"type": "progression", "name": "Dinosaur Egg"},
+     7: {"type": "progression", "name": "Nostradamus' Phone Number"},
+     8: {"type": "progression", "name": "Socrates' Phone Number"},
+     9: {"type": "progression", "name": "Mushroom Age Phone Number"},
+    10: {"type": "progression", "name": "Give Professor Einbock Hope"},
+    11: {"type": "progression", "name": "Return Tom Safely to 2008"},
+    12: {"type": "progression", "name": "Appease the Über-Mushroom"},
+    13: {"type": "progression", "name": "Find the Wedding Rings"},
+    14: {"type": "progression", "name": "Get Married to Tom Scout"},
+    15: {"type": "trap",        "name": "Main Menu Trap"},
 }
 
-DINO_EGG_ITEM = {"id": 6, "name": "Dinosaur Egg"}
+GAME_GATES = [ # (item_id, item_amt): [(chapter_id, task_id), ...]
+    # key item gates
+    [[ 1,  1], [( 4,  1), ( 5,  1)]],
+    [[ 1,  2], [(22,  1)]],
+    [[ 2,  1], [( 7,  1)]],
+    [[ 3,  1], [( 9,  1), (10,  1), (11,  1), (13,  1), (14,  1), (15,  1), (16,  1)]],
+    [[ 4,  1], [(12,  1)]],
+    [[ 5,  1], [(23,  1)]],
+    # phone number gates
+    [[ 7,  1], [( 3,  1)]],
+    [[ 8,  1], [( 6,  1)]],
+    [[ 9,  1], [( 8,  1)]],
+    # quest gates
+    [[10,  1], [(23,  1)]],
+    [[11,  1], [(23,  1)]],
+    [[12,  1], [(23,  1)]],
+    [[13,  1], [(23,  2)]],
+]
 
 KEY_QUESTS = {
-    "professor_hope": {"id": 10, "name": "Give Professor Einbock Hope", "task": ( 7,  4), "gates": [(23,  1)]},
-    "tom_return":     {"id": 11, "name": "Return Tom Safely to 2008",   "task": (13,  5), "gates": [(23,  1)]},
-    "uber_mushroom":  {"id": 12, "name": "Appease the Über-Mushroom",   "task": (22,  3), "gates": [(23,  1)]},
-    "wedding_rings":  {"id": 13, "name": "Find the Wedding Rings",      "task": (23,  1), "gates": [(23,  2)]},
-    "victory":        {"id": 14, "name": "Get Married to Tom Scout",    "task": (23,  2)},
+    10: ( 7,  4),
+    11: (13,  5),
+    12: (22,  3),
+    13: (23,  1),
+    14: (23,  2),
 }
 
-KEY_PHONE_NUMBERS = {
-    "nostradamus_number":  {"id": 20, "name": "Nostradamus' Phone Number", "gates": [( 3,  1)]},
-    "socrates_number":     {"id": 21, "name": "Socrates' Phone Number",    "gates": [( 6,  1)]},
-    "mushroom_age_number": {"id": 22, "name": "Mushroom Age Phone Number", "gates": [( 8,  1)]},
+MAIN_MENU_TRAP = 15
+KEY_ITEMS = [1, 1, 2, 3, 4, 5]
+KEY_REGION_ITEMS = [7, 8, 9]
+VICTORY_CONDITIONS = {
+    "get_married":           {"items": [[14,   1]], "use_quests": True},
+    "collect_dinosaur_eggs": {"macguffins": 6,      "use_quests": False},
 }
 
-PROGRESSION_ITEMS = {
-    "progressive_elixir": ["elixir", "total_elixir"],
-}
-
-TRAP_ITEMS = {
-    "main_menu": {"id": 30, "name": "Main Menu Trap"},
-}
-
-FILLER_ITEMS_ID = 40
+FILLER_ITEMS_ID = 16
 FILLER_SUFFIX = " (Junk)"
 FILLER_ITEMS = [
     # chapter 1 references
@@ -143,3 +163,6 @@ BONUS_ITEM_TASKS = [
     (21, 3),
     (22, 3),
 ]
+
+CH_MULT = 6
+TK_MULT = 2

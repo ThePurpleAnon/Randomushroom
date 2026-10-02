@@ -16,9 +16,8 @@ class MushroomAgeItem(Item):
 def item_names_to_ids() -> dict[str, int]:
     items = {}
 
-    items_to_check = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS | TRAP_ITEMS | {"dino_egg": DINO_EGG_ITEM}
-    for item in items_to_check.values():
-        items[item["name"]] = item["id"]
+    for item_id, item_data in GAME_ITEMS.items():
+        items[item_data["name"]] = item_id
     
     for i, item in enumerate(FILLER_ITEMS):
         items[item + FILLER_SUFFIX] = FILLER_ITEMS_ID + i
@@ -28,7 +27,7 @@ def item_names_to_ids() -> dict[str, int]:
 
 def get_random_filler_item_name(world: MushroomAgeWorld) -> str:
     if world.random.randint(0, 99) < world.options.trap_chance:
-        trap = world.random.choice(list(TRAP_ITEMS.values()))["name"]
+        trap = GAME_ITEMS[MAIN_MENU_TRAP]["name"]
         return trap
 
     item = world.random.choice(FILLER_ITEMS)
@@ -38,19 +37,16 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
     classification = ItemClassification.filler
     item_id = FILLER_ITEMS_ID
 
-    progress_items = KEY_ITEMS | KEY_QUESTS | KEY_PHONE_NUMBERS | {"dino_egg": DINO_EGG_ITEM}
-    for item in progress_items.values():
-        if name == item["name"]:
-            if item.get("useful", False):
-                classification = ItemClassification.useful
-            else:
-                classification = ItemClassification.progression
-            item_id = item["id"]
-    
-    for item in TRAP_ITEMS.values():
-        if name == item["name"]:
-            classification = ItemClassification.trap
-            item_id = item["id"]
+    for item_id_actual, item in GAME_ITEMS.items():
+        if name != item["name"]: continue
+        
+        match item["type"]:
+            case "filler":      classification = ItemClassification.filler
+            case "progression": classification = ItemClassification.progression
+            case "trap":        classification = ItemClassification.trap
+            case "useful":      classification = ItemClassification.useful
+
+        item_id = item_id_actual
 
     junk_name = name.removesuffix(FILLER_SUFFIX)
     if junk_name in FILLER_ITEMS:
@@ -63,21 +59,25 @@ def create_all_items(world: MushroomAgeWorld) -> None:
 
     all_items = KEY_ITEMS
 
-    if world.options.phone_numbers: # if phone numbers are in the pool
-        all_items |= KEY_PHONE_NUMBERS
+    if world.options.phone_numbers: # if extra region locks are included in the pool
+        all_items += KEY_REGION_ITEMS
 
-    for item in all_items.values():
-        item_pool.append(world.create_item(item["name"]))
+    for item in all_items:
+        item_name = GAME_ITEMS[item]["name"]
+        print(item_name)
+        item_pool.append(world.create_item(item_name))
 
     number_of_items = len(item_pool)
     number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
     needed_number_of_filler_items = number_of_unfilled_locations - number_of_items
-    
-    if world.options.victory_condition.current_key == "collect_dinosaur_eggs": # if dino eggs are the win condition
+
+    victory_cond = world.options.victory_condition.current_key
+    macguffins = VICTORY_CONDITIONS[victory_cond].get("macguffins")
+    if macguffins is not None:
         egg_amount = min(world.options.egg_amount, needed_number_of_filler_items)
         world.dino_egg_amount = egg_amount
 
-        item_pool.extend([world.create_item(DINO_EGG_ITEM["name"]) for _ in range(egg_amount)])
+        item_pool.extend([world.create_item(GAME_ITEMS[macguffins]["name"]) for _ in range(egg_amount)])
         needed_number_of_filler_items -= egg_amount
 
     item_pool.extend([world.create_filler() for _ in range(needed_number_of_filler_items)])

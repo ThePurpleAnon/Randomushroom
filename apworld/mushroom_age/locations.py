@@ -17,7 +17,7 @@ class MushroomAgeLocation(Location):
 def location_names_to_ids() -> dict[str, int | None]:
     locations = get_location_names_with_ids([{"task_id": task_id, "offset": 0, "string": LOCATION_NAME_STRING} for task_id in TASK_IDS])
     locations |= get_location_names_with_ids([{"task_id": task_id, "offset": 1, "string": LOCATION_NAME_STRING_BONUS} for task_id in BONUS_ITEM_TASKS])
-    locations |= get_location_names_with_ids([{"task_id": quest["task"], "offset": None, "string": LOCATION_NAME_STRING_QUEST} for quest in KEY_QUESTS.values()])
+    locations |= get_location_names_with_ids([{"task_id": task_id, "offset": None, "string": LOCATION_NAME_STRING_QUEST} for task_id in KEY_QUESTS.values()])
 
     return locations
 
@@ -26,7 +26,7 @@ def get_location_names_with_ids(location_dicts: list[dict]) -> dict[str, int | N
     return_dict = {}
 
     for location in location_dicts:
-        location_id = (location["task_id"][0]) * 1000 + (location["task_id"][1] * 10)
+        location_id = (location["task_id"][0] * CH_MULT + location["task_id"][1]) * TK_MULT
         return_dict[location["string"].format(*location["task_id"])] = None if location["offset"] is None else location_id + location["offset"]
 
     return return_dict
@@ -38,7 +38,7 @@ def create_all_locations(world: MushroomAgeWorld) -> None:
 
 def create_regular_locations(world: MushroomAgeWorld) -> None:
     chapter_regions = {}
-    for time_period in TIME_PERIODS.values():
+    for time_period in REGIONS.values():
         region = world.get_region(time_period["name"])
         for chapter in time_period["chapters"]:
             chapter_regions[chapter] = region
@@ -50,7 +50,10 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
         locations = {}
 
         location_strings = [LOCATION_NAME_STRING, LOCATION_NAME_STRING_BONUS]
-        if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
+
+        victory_cond = world.options.victory_condition.current_key
+        use_quests = VICTORY_CONDITIONS[victory_cond]["use_quests"]
+        if use_quests:
             location_strings.append(LOCATION_NAME_STRING_QUEST)
 
         for name_string in location_strings:
@@ -61,25 +64,34 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
         region.add_locations(locations, MushroomAgeLocation)
 
 def create_events(world: MushroomAgeWorld) -> None:
-    if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
-        for quest in KEY_QUESTS.values():
-            quest_item = items.MushroomAgeItem(quest["name"], ItemClassification.progression, None, world.player)
-            location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*quest["task"]))
+    event_dict = create_event_dict(world)
 
+    for task_key, quest_items in event_dict.items():
+        for item in quest_items:
+            item_name = GAME_ITEMS[item]["name"]
+            quest_item = items.MushroomAgeItem(item_name, ItemClassification.progression, None, world.player)
+
+            quest_task = (
+                (task_key // CH_MULT) + 1,
+                (task_key % CH_MULT) + 1
+            )
+
+            location = world.get_location(LOCATION_NAME_STRING_QUEST.format(*quest_task))
             location.place_locked_item(quest_item)
 
 
-def create_event_dict(world):
+def create_event_dict(world: MushroomAgeWorld) -> dict[int, list]:
     quest_dict = {}
 
-    if world.options.victory_condition.current_key == "get_married": # if marriage is the current goal
-        for quest in KEY_QUESTS.values():
-            task = quest["task"]
-            task_id = ((task[0] - 1) * 100) + (task[1] - 1)
+    victory_cond = world.options.victory_condition.current_key
+    use_quests = VICTORY_CONDITIONS[victory_cond]["use_quests"]
+    if use_quests:
+        for quest_id, quest_task in KEY_QUESTS.items():
+            task_id = (quest_task[0] - 1) * CH_MULT + (quest_task[1] - 1)
 
             if task_id not in quest_dict:
                 quest_dict[task_id] = []
 
-            quest_dict[task_id].append(quest["id"])
+            quest_dict[task_id].append(quest_id)
 
     return quest_dict
