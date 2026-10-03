@@ -58,10 +58,10 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
 def create_all_items(world: MushroomAgeWorld) -> None:
     key_item_pool = []
 
-    all_items = list(KEY_ITEMS)
+    all_items = KEY_ITEMS.copy()
 
     if world.options.region_gates: # if extra region locks are included in the pool
-        all_items += list(KEY_REGION_ITEMS)
+        all_items += KEY_REGION_ITEMS
 
     gate_dict = create_gate_dict(world, set_goal = False)
     starting_spots = 0
@@ -69,7 +69,7 @@ def create_all_items(world: MushroomAgeWorld) -> None:
     for gates in gate_dict.values():
         if gates == []:
             starting_spots += 1
-        elif gates != [[0, 0]] and ideal_start is None:
+        elif gates != [(0, 0)] and ideal_start is None:
             ideal_start = gates
 
     # if player doesn't have enough tasks at the start, give them enough items for the first task they can reach
@@ -79,7 +79,6 @@ def create_all_items(world: MushroomAgeWorld) -> None:
             for _ in range(item_amt):
                 all_items.remove(item_id)
                 item_name = GAME_ITEMS[item_id]["name"]
-                print(item_name)
                 item = world.create_item(item_name)
                 world.multiworld.push_precollected(item)
 

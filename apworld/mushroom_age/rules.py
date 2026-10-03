@@ -28,7 +28,7 @@ def set_gates(world: MushroomAgeWorld) -> None:
                 (task_key % CH_MULT) + 1
             )
 
-        if gates == [[0, 0]]: continue
+        if gates == [(0, 0)]: continue
 
         rules_list = []
         for rule_tuple in gates:
@@ -56,10 +56,10 @@ def set_gates(world: MushroomAgeWorld) -> None:
 
 
 def create_gate_dict(world: MushroomAgeWorld, set_goal: bool = True) -> dict[int, list]:
-    gatekeepers = list(KEY_ITEMS)
+    gatekeepers = KEY_ITEMS.copy()
 
     if world.options.region_gates: # if extra region locks are included in the pool
-        gatekeepers += list(KEY_REGION_ITEMS)
+        gatekeepers += KEY_REGION_ITEMS
 
     victory_cond = world.options.victory_condition.current_key
     use_quests = VICTORY_CONDITIONS[victory_cond]["use_quests"]
@@ -74,7 +74,7 @@ def create_gate_dict(world: MushroomAgeWorld, set_goal: bool = True) -> dict[int
             for task in TASK_IDS:
                 if chapter != task[0]: continue
 
-                for item_gate_id, task_gates in GAME_GATES:
+                for item_gate_id, task_gates in GAME_GATES.items():
                     if item_gate_id[0] not in gatekeepers: continue
 
                     if task in task_gates:
@@ -84,11 +84,11 @@ def create_gate_dict(world: MushroomAgeWorld, set_goal: bool = True) -> dict[int
 
                 task_key = (task[0] - 1) * CH_MULT + (task[1] - 1)
                 if str(chapter) in world.options.blocked_chapters and not task_is_required:
-                    gate_dict[task_key] = [[0, 0]] # "this task is blocked"
+                    gate_dict[task_key] = [(0, 0)] # "this task is blocked"
                 elif str(chapter) in world.options.blocked_chapters and task_is_required:
                     gate_dict[task_key] = []
                 else:
-                    gate_dict[task_key] = list(gates)
+                    gate_dict[task_key] = gates.copy()
 
     if not set_goal:
         return gate_dict
