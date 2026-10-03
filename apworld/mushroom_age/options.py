@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from Options import Choice, OptionGroup, PerGameCommonOptions, Range, Toggle, DefaultOnToggle
+from Options import Choice, OptionSet, OptionGroup, PerGameCommonOptions, Range, Toggle, DefaultOnToggle
 
 
 class VictoryCondition(Choice):
@@ -50,6 +50,15 @@ class PhoneNumbers(DefaultOnToggle):
     display_name = "Use Phone Numbers"
 
 
+class BlockedChapters(OptionSet):
+    """
+    Controls which Chapters are blocked from being included in the location pool.
+    """
+
+    valid_keys = [str(i + 1) for i in range(23)]
+    display_name = "Blocked Chapters"
+
+
 class TrapChance(Range):
     """
     Controls the percentage chance that any given filler item will be replaced by a trap item.
@@ -65,14 +74,15 @@ class TrapChance(Range):
 @dataclass
 class MushroomAgeOptions(PerGameCommonOptions):
     victory_condition: VictoryCondition
-    egg_amount: DinoEggAmount
-    egg_percent: DinoEggPercentage
-    phone_numbers: PhoneNumbers
+    macguffin_amount: DinoEggAmount
+    macguffin_percent: DinoEggPercentage
+    region_gates: PhoneNumbers
+    blocked_chapters: BlockedChapters
     trap_chance: TrapChance
 
 option_groups = [
     OptionGroup(
         "Gameplay Options",
-        [VictoryCondition, DinoEggAmount, DinoEggPercentage, PhoneNumbers, TrapChance],
+        [VictoryCondition, DinoEggAmount, DinoEggPercentage, PhoneNumbers, BlockedChapters, TrapChance],
     ),
 ]

@@ -34,21 +34,21 @@ GAME_ITEMS = {
 
 GAME_GATES = [ # (item_id, item_amt): [(chapter_id, task_id), ...]
     # key item gates
-    [[ 1,  1], [( 4,  1), ( 5,  1)]],
-    [[ 1,  2], [(22,  1)]],
-    [[ 2,  1], [( 7,  1)]],
-    [[ 3,  1], [( 9,  1), (10,  1), (11,  1), (13,  1), (14,  1), (15,  1), (16,  1)]],
-    [[ 4,  1], [(12,  1)]],
-    [[ 5,  1], [(23,  1)]],
+    [( 1,  1), [( 4,  1), ( 5,  1)]],
+    [( 1,  2), [(22,  1)]],
+    [( 2,  1), [( 7,  1)]],
+    [( 3,  1), [( 9,  1), (10,  1), (11,  1), (13,  1), (14,  1), (15,  1), (16,  1)]],
+    [( 4,  1), [(12,  1)]],
+    [( 5,  1), [(23,  1)]],
     # phone number gates
-    [[ 7,  1], [( 3,  1)]],
-    [[ 8,  1], [( 6,  1)]],
-    [[ 9,  1], [( 8,  1)]],
+    [( 7,  1), [( 3,  1)]],
+    [( 8,  1), [( 6,  1)]],
+    [( 9,  1), [( 8,  1)]],
     # quest gates
-    [[10,  1], [(23,  1)]],
-    [[11,  1], [(23,  1)]],
-    [[12,  1], [(23,  1)]],
-    [[13,  1], [(23,  2)]],
+    [(10,  1), [(23,  1)]],
+    [(11,  1), [(23,  1)]],
+    [(12,  1), [(23,  1)]],
+    [(13,  1), [(23,  2)]],
 ]
 
 KEY_QUESTS = {
@@ -63,8 +63,8 @@ MAIN_MENU_TRAP = 15
 KEY_ITEMS = [1, 1, 2, 3, 4, 5]
 KEY_REGION_ITEMS = [7, 8, 9]
 VICTORY_CONDITIONS = {
-    "get_married":           {"items": [[14,   1]], "use_quests": True},
-    "collect_dinosaur_eggs": {"macguffins": 6,      "use_quests": False},
+    "get_married":           {"items": [(14, 1)], "use_quests": True},
+    "collect_dinosaur_eggs": {"macguffins": 6,    "use_quests": False},
 }
 
 FILLER_ITEMS_ID = 16
@@ -123,6 +123,9 @@ FILLER_ITEMS = [
     "Professor's Suit", "Shovel", "Manhole Cover", "Crowbar", "Kiwi", "Grapes", "Pear", "Watermelon", "Apple", "Banana", "Rose", "Advertisement",
 ]
 
+CH_MULT = 6
+TK_MULT = 2
+
 TASK_IDS = [
     ( 1, 1), ( 1, 2), ( 1, 3),
     ( 2, 1), ( 2, 2), ( 2, 3), ( 2, 4),
@@ -163,6 +166,3 @@ BONUS_ITEM_TASKS = [
     (21, 3),
     (22, 3),
 ]
-
-CH_MULT = 6
-TK_MULT = 2

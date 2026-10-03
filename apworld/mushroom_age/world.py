@@ -28,7 +28,7 @@ class MushroomAgeWorld(World):
     def create_regions(self) -> None:
         regions.create_and_connect_regions(self)
         locations.create_all_locations(self)
-    
+
     def set_rules(self) -> None:
         rules.set_all_rules(self)
 
@@ -51,7 +51,7 @@ class MushroomAgeWorld(World):
                 "MAIN_MENU_TRAP": MAIN_MENU_TRAP,
             },
             "options": self.options.as_dict(
-                "victory_condition", "egg_amount", "egg_percent", "phone_numbers"
+                "victory_condition", "macguffin_amount", "macguffin_percent", "region_gates", "blocked_chapters"
             ),
         }
 

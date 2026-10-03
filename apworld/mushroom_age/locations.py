@@ -61,7 +61,14 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
             if location_name in all_locations:
                 locations[location_name] = all_locations[location_name]
 
-        region.add_locations(locations, MushroomAgeLocation)
+        use_location = False
+        if str(task[0]) not in world.options.blocked_chapters:
+            use_location = True
+        elif use_quests and LOCATION_NAME_STRING_QUEST.format(*task) in all_locations:
+            use_location = True
+        
+        if use_location:
+            region.add_locations(locations, MushroomAgeLocation)
 
 def create_events(world: MushroomAgeWorld) -> None:
     event_dict = create_event_dict(world)

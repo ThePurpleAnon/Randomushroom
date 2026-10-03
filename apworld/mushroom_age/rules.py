@@ -28,6 +28,8 @@ def set_gates(world: MushroomAgeWorld) -> None:
                 (task_key % CH_MULT) + 1
             )
 
+        if gates == [[0, 0]]: continue
+
         rules_list = []
         for rule_tuple in gates:
             rules_list.append(Has(GAME_ITEMS[rule_tuple[0]]["name"], count = rule_tuple[1]))
@@ -53,11 +55,11 @@ def set_gates(world: MushroomAgeWorld) -> None:
                         world.set_rule(location, rule)
 
 
-def create_gate_dict(world: MushroomAgeWorld) -> dict[int, list]:
-    gatekeepers = KEY_ITEMS
+def create_gate_dict(world: MushroomAgeWorld, set_goal: bool = True) -> dict[int, list]:
+    gatekeepers = list(KEY_ITEMS)
 
-    if world.options.phone_numbers: # if extra region locks are included in the pool
-        gatekeepers += KEY_REGION_ITEMS
+    if world.options.region_gates: # if extra region locks are included in the pool
+        gatekeepers += list(KEY_REGION_ITEMS)
 
     victory_cond = world.options.victory_condition.current_key
     use_quests = VICTORY_CONDITIONS[victory_cond]["use_quests"]
@@ -77,8 +79,19 @@ def create_gate_dict(world: MushroomAgeWorld) -> dict[int, list]:
 
                     if task in task_gates:
                         gates.append(item_gate_id)
+                
+                task_is_required = use_quests and task in KEY_QUESTS.values()
 
-                gate_dict[(task[0] - 1) * CH_MULT + (task[1] - 1)] = list(gates)
+                task_key = (task[0] - 1) * CH_MULT + (task[1] - 1)
+                if str(chapter) in world.options.blocked_chapters and not task_is_required:
+                    gate_dict[task_key] = [[0, 0]] # "this task is blocked"
+                elif str(chapter) in world.options.blocked_chapters and task_is_required:
+                    gate_dict[task_key] = []
+                else:
+                    gate_dict[task_key] = list(gates)
+
+    if not set_goal:
+        return gate_dict
 
     # set completion rule
     gate_dict[-1] = []
@@ -87,7 +100,7 @@ def create_gate_dict(world: MushroomAgeWorld) -> dict[int, list]:
     
     macguffins = VICTORY_CONDITIONS[victory_cond].get("macguffins")
     if macguffins is not None:
-        macguffin_amt = max(1, round(world.dino_egg_amount.value * (world.options.egg_percent / 100)))
+        macguffin_amt = max(1, round(world.total_macguffin_amount * (world.options.macguffin_percent / 100)))
         gate_dict[-1].append([macguffins, macguffin_amt])
         
 

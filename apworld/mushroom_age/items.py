@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from BaseClasses import Item, ItemClassification
 
 from .game_constants import *
+from .rules import create_gate_dict
 
 if TYPE_CHECKING:
     from .world import MushroomAgeWorld
@@ -55,30 +56,59 @@ def create_item_with_correct_classification(world: MushroomAgeWorld, name: str) 
     return MushroomAgeItem(name, classification, item_id, world.player)
 
 def create_all_items(world: MushroomAgeWorld) -> None:
-    item_pool = []
+    key_item_pool = []
 
-    all_items = KEY_ITEMS
+    all_items = list(KEY_ITEMS)
 
-    if world.options.phone_numbers: # if extra region locks are included in the pool
-        all_items += KEY_REGION_ITEMS
+    if world.options.region_gates: # if extra region locks are included in the pool
+        all_items += list(KEY_REGION_ITEMS)
+
+    gate_dict = create_gate_dict(world, set_goal = False)
+    starting_spots = 0
+    ideal_start = None
+    for gates in gate_dict.values():
+        if gates == []:
+            starting_spots += 1
+        elif gates != [[0, 0]] and ideal_start is None:
+            ideal_start = gates
+
+    # if player doesn't have enough tasks at the start, give them enough items for the first task they can reach
+    if ideal_start is not None and starting_spots < len(ideal_start):
+        for item_id, item_amt in ideal_start:
+            if item_id not in all_items: continue
+            for _ in range(item_amt):
+                all_items.remove(item_id)
+                item_name = GAME_ITEMS[item_id]["name"]
+                print(item_name)
+                item = world.create_item(item_name)
+                world.multiworld.push_precollected(item)
 
     for item in all_items:
         item_name = GAME_ITEMS[item]["name"]
-        print(item_name)
-        item_pool.append(world.create_item(item_name))
+        key_item_pool.append(world.create_item(item_name))
+    
+    world.random.shuffle(key_item_pool)
 
-    number_of_items = len(item_pool)
+    number_of_items = len(key_item_pool)
     number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
     needed_number_of_filler_items = number_of_unfilled_locations - number_of_items
+
+    item_pool = []
 
     victory_cond = world.options.victory_condition.current_key
     macguffins = VICTORY_CONDITIONS[victory_cond].get("macguffins")
     if macguffins is not None:
-        egg_amount = min(world.options.egg_amount, needed_number_of_filler_items)
-        world.dino_egg_amount = egg_amount
+        macguffin_amount = min(world.options.macguffin_amount, max(needed_number_of_filler_items, 1))
+        world.total_macguffin_amount = macguffin_amount
 
-        item_pool.extend([world.create_item(GAME_ITEMS[macguffins]["name"]) for _ in range(egg_amount)])
-        needed_number_of_filler_items -= egg_amount
+        item_pool.extend([world.create_item(GAME_ITEMS[macguffins]["name"]) for _ in range(macguffin_amount)])
+        needed_number_of_filler_items -= macguffin_amount
+    
+    item_pool.extend(key_item_pool)
+
+    # if there are too many items for the number of locations, just give the extras to the player outright
+    while number_of_unfilled_locations < len(item_pool):
+        world.multiworld.push_precollected(item_pool.pop())
 
     item_pool.extend([world.create_filler() for _ in range(needed_number_of_filler_items)])
 
