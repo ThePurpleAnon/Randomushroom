@@ -71,7 +71,10 @@ def create_gate_dict(world: MushroomAgeWorld, set_goal: bool = True) -> dict[int
     for period in REGIONS.values():
         gates = []
         for chapter in period["chapters"]:
-            for task in TASK_IDS:
+            for task_temp in TASK_IDS:
+                task = (task_temp[0], task_temp[1])
+                task_type = task_temp[2]
+
                 if chapter != task[0]: continue
 
                 for item_gate_id, task_gates in GAME_GATES.items():
@@ -82,13 +85,17 @@ def create_gate_dict(world: MushroomAgeWorld, set_goal: bool = True) -> dict[int
                 
                 task_is_required = use_quests and task in KEY_QUESTS.values()
 
+                current_gates = gates.copy()
+                if world.options.minigame_gates and MINIGAME_GATES.get(task_type) is not None: # if extra minigame locks are included in the pool
+                    current_gates.append((MINIGAME_GATES[task_type], 1))
+
                 task_key = (task[0] - 1) * CH_MULT + (task[1] - 1)
                 if str(chapter) in world.options.blocked_chapters and not task_is_required:
                     gate_dict[task_key] = [(0, 0)] # "this task is blocked"
                 elif str(chapter) in world.options.blocked_chapters and task_is_required:
                     gate_dict[task_key] = []
                 else:
-                    gate_dict[task_key] = gates.copy()
+                    gate_dict[task_key] = current_gates
 
     if not set_goal:
         return gate_dict

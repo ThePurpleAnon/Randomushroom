@@ -15,7 +15,7 @@ class MushroomAgeLocation(Location):
     game = "Mushroom Age"
 
 def location_names_to_ids() -> dict[str, int | None]:
-    locations = get_location_names_with_ids([{"task_id": task_id, "offset": 0, "string": LOCATION_NAME_STRING} for task_id in TASK_IDS])
+    locations = get_location_names_with_ids([{"task_id": task_id[:2], "offset": 0, "string": LOCATION_NAME_STRING} for task_id in TASK_IDS])
     locations |= get_location_names_with_ids([{"task_id": task_id, "offset": 1, "string": LOCATION_NAME_STRING_BONUS} for task_id in BONUS_ITEM_TASKS])
     locations |= get_location_names_with_ids([{"task_id": task_id, "offset": None, "string": LOCATION_NAME_STRING_QUEST} for task_id in KEY_QUESTS.values()])
 
@@ -57,14 +57,14 @@ def create_regular_locations(world: MushroomAgeWorld) -> None:
             location_strings.append(LOCATION_NAME_STRING_QUEST)
 
         for name_string in location_strings:
-            location_name = name_string.format(*task)
+            location_name = name_string.format(task[0], task[1])
             if location_name in all_locations:
                 locations[location_name] = all_locations[location_name]
 
         use_location = False
         if str(task[0]) not in world.options.blocked_chapters:
             use_location = True
-        elif use_quests and LOCATION_NAME_STRING_QUEST.format(*task) in all_locations:
+        elif use_quests and LOCATION_NAME_STRING_QUEST.format(task[0], task[1]) in all_locations:
             use_location = True
         
         if use_location:

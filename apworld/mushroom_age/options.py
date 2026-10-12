@@ -50,6 +50,14 @@ class PhoneNumbers(DefaultOnToggle):
     display_name = "Use Phone Numbers"
 
 
+class MinigameUnlocks(Toggle):
+    """
+    Controls whether certain minigame types are gated behind key items that need to be collected before playing those tasks.
+    """
+
+    display_name = "Use Minigame Unlocks"
+
+
 class BlockedChapters(OptionSet):
     """
     Controls which Chapters are blocked from being included in the location pool.
@@ -77,12 +85,13 @@ class MushroomAgeOptions(PerGameCommonOptions):
     macguffin_amount: DinoEggAmount
     macguffin_percent: DinoEggPercentage
     region_gates: PhoneNumbers
+    minigame_gates: MinigameUnlocks
     blocked_chapters: BlockedChapters
     trap_chance: TrapChance
 
 option_groups = [
     OptionGroup(
         "Gameplay Options",
-        [VictoryCondition, DinoEggAmount, DinoEggPercentage, PhoneNumbers, BlockedChapters, TrapChance],
+        [VictoryCondition, DinoEggAmount, DinoEggPercentage, PhoneNumbers, MinigameUnlocks, BlockedChapters, TrapChance],
     ),
 ]

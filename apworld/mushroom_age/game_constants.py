@@ -30,6 +30,11 @@ GAME_ITEMS = {
     13: {"type": "progression", "name": "Find the Wedding Rings"},
     14: {"type": "progression", "name": "Get Married to Tom Scout"},
     15: {"type": "trap",        "name": "Main Menu Trap"},
+    16: {"type": "progression", "name": "Magnifying Glass"},
+    17: {"type": "progression", "name": "Backpack"},
+    18: {"type": "progression", "name": "Technology Manual"},
+    19: {"type": "progression", "name": "Pair of Tweezers"},
+    20: {"type": "progression", "name": "Thinking Cap"},
 }
 
 GAME_GATES = { # (item_id, item_amt): [(chapter_id, task_id), ...]
@@ -59,9 +64,18 @@ KEY_QUESTS = {
     14: (23,  2),
 }
 
+MINIGAME_GATES = {
+    "i-spy": 16,
+    "gathr": 17,
+    "techm": 18,
+    "graby": 19,
+    "think": 20,
+}
+
 MAIN_MENU_TRAP = 15
 KEY_ITEMS = [1, 1, 2, 3, 4, 5]
 KEY_REGION_ITEMS = [7, 8, 9]
+KEY_MINIGAME_ITEMS = [16, 17, 18, 19, 20]
 VICTORY_CONDITIONS = {
     "get_married":           {"items": [(14, 1)], "use_quests": True},
     "collect_dinosaur_eggs": {"macguffins": 6,    "use_quests": False},
@@ -127,29 +141,29 @@ CH_MULT = 6
 TK_MULT = 2
 
 TASK_IDS = [
-    ( 1, 1), ( 1, 2), ( 1, 3),
-    ( 2, 1), ( 2, 2), ( 2, 3), ( 2, 4),
-    ( 3, 1), ( 3, 2), ( 3, 3), ( 3, 4),
-    ( 4, 1), ( 4, 2), ( 4, 3), ( 4, 4), ( 4, 5), ( 4, 6),
-    ( 5, 1), ( 5, 2), ( 5, 3), ( 5, 4),
-    ( 6, 1), ( 6, 2), ( 6, 3), ( 6, 4),
-    ( 7, 1), ( 7, 2), ( 7, 3), ( 7, 4),
-    ( 8, 1), ( 8, 2), ( 8, 3),
-    ( 9, 1), ( 9, 2), ( 9, 3), ( 9, 4), ( 9, 5),
-    (10, 1), (10, 2), (10, 3), (10, 4),
-    (11, 1), (11, 2), (11, 3), (11, 4), (11, 5), (11, 6),
-    (12, 1), (12, 2), (12, 3),
-    (13, 1), (13, 2), (13, 3), (13, 4), (13, 5),
-    (14, 1), (14, 2), (14, 3), (14, 4),
-    (15, 1), (15, 2), (15, 3),
-    (16, 1), (16, 2), (16, 3), (16, 4), (16, 5), (16, 6),
-    (17, 1),
-    (18, 1), (18, 2), (18, 3),
-    (19, 1), (19, 2), (19, 3),
-    (20, 1), (20, 2), (20, 3), (20, 4),
-    (21, 1), (21, 2), (21, 3),
-    (22, 1), (22, 2), (22, 3),
-    (23, 1), (23, 2),
+    ( 1, 1, "norml"), ( 1, 2, "norml"), ( 1, 3, "i-spy"),
+    ( 2, 1, "techm"), ( 2, 2, "norml"), ( 2, 3, "gathr"), ( 2, 4, "techm"),
+    ( 3, 1, "gathr"), ( 3, 2, "graby"), ( 3, 3, "graby"), ( 3, 4, "i-spy"),
+    ( 4, 1, "norml"), ( 4, 2, "norml"), ( 4, 3, "norml"), ( 4, 4, "think"), ( 4, 5, "gathr"), ( 4, 6, "think"),
+    ( 5, 1, "norml"), ( 5, 2, "gathr"), ( 5, 3, "norml"), ( 5, 4, "think"),
+    ( 6, 1, "i-spy"), ( 6, 2, "think"), ( 6, 3, "norml"), ( 6, 4, "think"),
+    ( 7, 1, "gathr"), ( 7, 2, "gathr"), ( 7, 3, "i-spy"), ( 7, 4, "i-spy"),
+    ( 8, 1, "gathr"), ( 8, 2, "gathr"), ( 8, 3, "think"),
+    ( 9, 1, "norml"), ( 9, 2, "norml"), ( 9, 3, "i-spy"), ( 9, 4, "norml"), ( 9, 5, "techm"),
+    (10, 1, "think"), (10, 2, "gathr"), (10, 3, "graby"), (10, 4, "graby"),
+    (11, 1, "i-spy"), (11, 2, "techm"), (11, 3, "think"), (11, 4, "think"), (11, 5, "graby"), (11, 6, "norml"),
+    (12, 1, "graby"), (12, 2, "graby"), (12, 3, "graby"),
+    (13, 1, "norml"), (13, 2, "i-spy"), (13, 3, "norml"), (13, 4, "i-spy"), (13, 5, "gathr"),
+    (14, 1, "gathr"), (14, 2, "think"), (14, 3, "gathr"), (14, 4, "norml"),
+    (15, 1, "i-spy"), (15, 2, "think"), (15, 3, "techm"),
+    (16, 1, "techm"), (16, 2, "techm"), (16, 3, "techm"), (16, 4, "i-spy"), (16, 5, "graby"), (16, 6, "norml"),
+    (17, 1, "norml"),
+    (18, 1, "graby"), (18, 2, "graby"), (18, 3, "graby"),
+    (19, 1, "norml"), (19, 2, "techm"), (19, 3, "think"),
+    (20, 1, "norml"), (20, 2, "techm"), (20, 3, "techm"), (20, 4, "techm"),
+    (21, 1, "think"), (21, 2, "think"), (21, 3, "i-spy"),
+    (22, 1, "graby"), (22, 2, "norml"), (22, 3, "i-spy"),
+    (23, 1, "norml"), (23, 2, "norml"),
 ]
 
 BONUS_ITEM_TASKS = [

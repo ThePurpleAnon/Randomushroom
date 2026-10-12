@@ -62,6 +62,9 @@ def create_all_items(world: MushroomAgeWorld) -> None:
 
     if world.options.region_gates: # if extra region locks are included in the pool
         all_items += KEY_REGION_ITEMS
+    
+    if world.options.minigame_gates: # if extra minigame locks are included in the pool
+        all_items += KEY_MINIGAME_ITEMS
 
     gate_dict = create_gate_dict(world, set_goal = False)
     starting_spots = 0

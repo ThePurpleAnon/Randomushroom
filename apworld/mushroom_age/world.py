@@ -51,7 +51,7 @@ class MushroomAgeWorld(World):
                 "MAIN_MENU_TRAP": MAIN_MENU_TRAP,
             },
             "options": self.options.as_dict(
-                "victory_condition", "macguffin_amount", "macguffin_percent", "region_gates", "blocked_chapters"
+                "victory_condition", "macguffin_amount", "macguffin_percent", "region_gates", "minigame_gates", "blocked_chapters"
             ),
         }
 
